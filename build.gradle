@@ -1,0 +1,15 @@
+allprojects {
+    repositories {
+        jcenter() 
+		mavenCentral()
+    }
+}
+
+
+
+subprojects {
+	group = 'com.github.dzeko14.socialNetwork'
+    version = '1.0'
+	
+}
+
