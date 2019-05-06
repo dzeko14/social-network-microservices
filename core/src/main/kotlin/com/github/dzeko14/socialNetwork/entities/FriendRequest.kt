@@ -1,10 +1,12 @@
 package com.github.dzeko14.socialNetwork.entities
 
+import com.github.dzeko14.socialNetwork.entities.interfaces.Identifiable
 import java.time.LocalDateTime
 import java.util.*
 
 abstract class FriendRequest(
-        open val id: UUID,
-        open val sender: User,
-        open val receiver: User,
-        open val date: LocalDateTime)
+        override val id: Long = 0,
+        open val sender: User = User.emptyObject(),
+        open val receiver: User = User.emptyObject(),
+        open val date: LocalDateTime = LocalDateTime.MIN
+) : Identifiable
