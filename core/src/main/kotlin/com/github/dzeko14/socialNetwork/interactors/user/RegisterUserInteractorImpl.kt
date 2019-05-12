@@ -1,8 +1,7 @@
-package com.github.dzeko14.socialNetwork.interactors.implementations
+package com.github.dzeko14.socialNetwork.interactors.user
 
 import com.github.dzeko14.socialNetwork.entities.User
 import com.github.dzeko14.socialNetwork.exceptions.EmptyFieldException
-import com.github.dzeko14.socialNetwork.interactors.RegisterUserInteractor
 import com.github.dzeko14.socialNetwork.provider.StorageProvider
 
 class RegisterUserInteractorImpl(

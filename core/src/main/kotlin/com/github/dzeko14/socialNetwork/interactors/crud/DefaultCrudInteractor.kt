@@ -4,7 +4,7 @@ import com.github.dzeko14.socialNetwork.entities.interfaces.Identifiable
 import com.github.dzeko14.socialNetwork.exceptions.NoSuchObjectInStorageException
 import com.github.dzeko14.socialNetwork.provider.StorageProvider
 
-class DefaultCrudInteractor<T: Identifiable> (
+open class DefaultCrudInteractor<T: Identifiable> (
         private val storage: StorageProvider<T>
 ) : GetIdentifiableInteractor<T>, GetAllIdentifiableInteractor<T> {
     override fun get(id: Identifiable): T {

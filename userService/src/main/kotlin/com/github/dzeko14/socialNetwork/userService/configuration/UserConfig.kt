@@ -1,12 +1,16 @@
 package com.github.dzeko14.socialNetwork.userService.configuration
 
 import com.github.dzeko14.socialNetwork.entities.User
-import com.github.dzeko14.socialNetwork.interactors.RegisterUserInteractor
+import com.github.dzeko14.socialNetwork.interactors.user.RegisterUserInteractor
 import com.github.dzeko14.socialNetwork.interactors.crud.DefaultCrudInteractor
 import com.github.dzeko14.socialNetwork.interactors.crud.GetAllIdentifiableInteractor
 import com.github.dzeko14.socialNetwork.interactors.crud.GetIdentifiableInteractor
-import com.github.dzeko14.socialNetwork.interactors.implementations.RegisterUserInteractorImpl
+import com.github.dzeko14.socialNetwork.interactors.user.RegisterUserInteractorImpl
+import com.github.dzeko14.socialNetwork.interactors.user.UserCrudInteractor
 import com.github.dzeko14.socialNetwork.provider.StorageProvider
+import com.github.dzeko14.socialNetwork.userService.repository.UserRepository
+import com.github.dzeko14.socialNetwork.userService.validator.PasswordValidatorImpl
+import com.github.dzeko14.socialNetwork.validator.PasswordValidator
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -23,28 +27,17 @@ class UserConfig {
     }
 
     @Bean
-    fun getUserByIdInteractor(
-            @Qualifier("userCrudInteractor")
-            userCrudInteractor: DefaultCrudInteractor<User>
-    ): GetIdentifiableInteractor<User> {
-        return userCrudInteractor
-    }
-
-    @Bean
-    fun getAllUsersInteractor(
-            @Qualifier("userCrudInteractor")
-            userCrudInteractor: DefaultCrudInteractor<User>
-    ): GetAllIdentifiableInteractor<User> {
-        return userCrudInteractor
-    }
-
-    @Qualifier("userCrudInteractor")
-    @Bean
     @Scope("singleton")
-    fun getDefaultUserCrudInteractor(
+    fun userCrudInteractor(
             @Qualifier("userStorageProvider")
-            userStorageProvider: StorageProvider<User>
-    ): DefaultCrudInteractor<User> {
-        return DefaultCrudInteractor(userStorageProvider)
+            userStorageProvider: StorageProvider<User>,
+            passwordValidator: PasswordValidator
+    ): UserCrudInteractor {
+        return UserCrudInteractor(userStorageProvider, passwordValidator)
+    }
+
+    @Bean
+    fun passwordValidator(userRepo: UserRepository): PasswordValidator {
+        return PasswordValidatorImpl(userRepo)
     }
 }
