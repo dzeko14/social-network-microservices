@@ -13,7 +13,7 @@ class LoginUserInteractorImpl(
 ) : LoginUserInteractor {
 
     override fun login(user: User, token: Token): Token {
-        if (tokenValidator.validateToken(token, user)) return token
+        if (tokenValidator.validateToken(token)) return token
 
         if (user.login.isEmpty() || user.password.isEmpty()) {
             throw EmptyFieldException(user)

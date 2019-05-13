@@ -35,4 +35,9 @@ class UserConfig {
                             passwordValidator: PasswordValidator): LoginUserInteractor {
         return LoginUserInteractorImpl(passwordValidator, tokenValidator)
     }
+
+    @Bean
+    fun validateUserInteractor(tokenValidator: TokenValidator): ValidateUserInteractor {
+        return ValidateUserInteractorImpl(tokenValidator)
+    }
 }

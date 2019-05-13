@@ -2,7 +2,9 @@ package com.github.dzeko14.socialNetwork.userService.validator
 
 import com.github.dzeko14.socialNetwork.entities.Token
 import com.github.dzeko14.socialNetwork.entities.User
+import com.github.dzeko14.socialNetwork.userService.repository.UserRepository
 import com.github.dzeko14.socialNetwork.validator.TokenValidator
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.lang.Exception
 import java.time.LocalDateTime
@@ -11,12 +13,15 @@ import java.time.ZoneOffset
 const val TOKEN_EXPIRE_DAY = 1
 
 @Component
-class TokenValidatorImpl : TokenValidator {
-    override fun validateToken(token: Token, user: User): Boolean {
+class TokenValidatorImpl @Autowired constructor(
+        private val userRepository: UserRepository
+) : TokenValidator {
+    override fun validateToken(token: Token): Boolean {
         val tokenData = token.value.split("--")
         return try {
-            if (tokenData[0] == user.login
-                    && encodePassword(user.password) == tokenData[1].toInt()) {
+            val user = userRepository.findByLogin(tokenData[0])
+            val encodedPassword = encodePassword(user.password)
+            if (encodedPassword == tokenData[1].toInt()) {
                 if (TOKEN_EXPIRE_DAY == -1) { true }
                 else {
                     LocalDateTime
