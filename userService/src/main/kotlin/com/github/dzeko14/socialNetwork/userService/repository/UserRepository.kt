@@ -9,4 +9,6 @@ import java.util.*
 interface UserRepository : JpaRepository<UserImpl, Long> {
 
     fun countById(id: Long): Long
+
+    fun findByLogin(login: String): UserImpl
 }
