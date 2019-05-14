@@ -1,7 +1,6 @@
 package com.github.dzeko14.socialNetwork.entities
 
 import com.github.dzeko14.socialNetwork.entities.interfaces.Identifiable
-import java.util.*
 
 abstract class User  (
         override val id: Long = 0,

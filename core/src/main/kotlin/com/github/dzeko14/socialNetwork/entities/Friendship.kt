@@ -11,8 +11,12 @@ abstract class Friendship(
         fun fromFriendRequest(fr: FriendRequest): Friendship {
             return FriendshipImpl(fr.sender, fr.receiver)
         }
+
+        fun fromFriendRequestReversed(fr: FriendRequest): Friendship {
+            return FriendshipImpl(fr.receiver, fr.sender)
+        }
     }
-    private data class FriendshipImpl(
+    private class FriendshipImpl(
             override val user1: User,
             override val user2: User
     ) : Friendship(0, user1, user2)

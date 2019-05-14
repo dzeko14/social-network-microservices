@@ -1,7 +1,8 @@
 package com.github.dzeko14.socialNetwork.interactors.friendrequest
 
 import com.github.dzeko14.socialNetwork.entities.FriendRequest
+import com.github.dzeko14.socialNetwork.entities.interfaces.Identifiable
 
 interface DenyFriendRequestInteractor {
-    fun deny(request: FriendRequest)
+    fun deny(requestId: Identifiable)
 }

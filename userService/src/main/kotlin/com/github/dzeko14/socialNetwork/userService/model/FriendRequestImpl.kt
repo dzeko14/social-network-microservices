@@ -10,7 +10,7 @@ import javax.persistence.*
 class FriendRequestImpl(
         @Id @GeneratedValue(strategy = GenerationType.AUTO) override val id: Long = 0,
 
-        @ManyToOne(targetEntity = UserImpl::class, cascade = [CascadeType.REMOVE])
+        @ManyToOne(targetEntity = UserImpl::class)
         @JoinColumn
         override val sender: UserImpl,
 
