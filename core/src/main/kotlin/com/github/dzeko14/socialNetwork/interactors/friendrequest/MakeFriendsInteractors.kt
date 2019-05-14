@@ -1,17 +1,13 @@
-package com.github.dzeko14.socialNetwork.interactors.implementations
+package com.github.dzeko14.socialNetwork.interactors.friendrequest
 
 import com.github.dzeko14.socialNetwork.entities.FriendRequest
 import com.github.dzeko14.socialNetwork.entities.Friendship
 import com.github.dzeko14.socialNetwork.entities.User
 import com.github.dzeko14.socialNetwork.exceptions.NoSuchUserException
-import com.github.dzeko14.socialNetwork.interactors.ApproveFriendRequestInteractor
-import com.github.dzeko14.socialNetwork.interactors.DenyFriendRequestInteractor
-import com.github.dzeko14.socialNetwork.interactors.MakeFriendsRequestInteractor
 import com.github.dzeko14.socialNetwork.provider.StorageProvider
 import java.rmi.NoSuchObjectException
 
 class MakeFriendsInteractors(
-        private val requestStorageProvider: StorageProvider<FriendRequest>,
         private val friendshipStorageProvider: StorageProvider<Friendship>,
         private val friendRequestStorageProvider: StorageProvider<FriendRequest>,
         private val userStorageProvider: StorageProvider<User>
@@ -19,13 +15,15 @@ class MakeFriendsInteractors(
         MakeFriendsRequestInteractor {
 
     override fun approve(friendRequest: FriendRequest) {
-        if (requestStorageProvider.validate(friendRequest)) {
+        if (!friendRequestStorageProvider.validate(friendRequest)) {
             throw NoSuchObjectException("There is no such object in database: $friendRequest")
         }
 
         friendshipStorageProvider.save(
                 Friendship.fromFriendRequest(friendRequest)
         )
+
+        friendRequestStorageProvider.delete(friendRequest)
     }
 
     override fun deny(request: FriendRequest) {
@@ -43,10 +41,10 @@ class MakeFriendsInteractors(
             throw NoSuchUserException(request.receiver)
         }
 
-        if (requestStorageProvider.validate(request)) {
+        if (friendRequestStorageProvider.validate(request)) {
             return
         }
 
-        requestStorageProvider.save(request)
+        friendRequestStorageProvider.save(request)
     }
 }

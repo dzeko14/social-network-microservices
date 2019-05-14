@@ -6,7 +6,8 @@ import com.github.dzeko14.socialNetwork.provider.StorageProvider
 
 open class DefaultCrudInteractor<T: Identifiable> (
         private val storage: StorageProvider<T>
-) : GetIdentifiableInteractor<T>, GetAllIdentifiableInteractor<T> {
+) : GetIdentifiableInteractor<T>, GetAllIdentifiableInteractor<T>,
+        RemoveIdentifiableInteractor<T> {
     override fun get(id: Identifiable): T {
         return try {
             storage.getById(id)
@@ -17,5 +18,9 @@ open class DefaultCrudInteractor<T: Identifiable> (
 
     override fun getAll(): List<T> {
         return storage.getAll()
+    }
+
+    override fun remove(obj: T) {
+        storage.delete(obj)
     }
 }

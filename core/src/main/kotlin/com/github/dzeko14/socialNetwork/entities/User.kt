@@ -25,5 +25,15 @@ abstract class User  (
                     get() = super.name
             }
         }
+
+        fun withoutPassword(user: User): User {
+            return object : User(
+                    user.id,
+                    user.login,
+                    "",
+                    user.email,
+                    user.name
+            ){}
+        }
     }
 }

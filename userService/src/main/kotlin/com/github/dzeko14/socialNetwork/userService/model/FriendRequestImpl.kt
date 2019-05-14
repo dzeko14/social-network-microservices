@@ -8,15 +8,22 @@ import javax.persistence.*
 
 @Entity(name = "Friend_requests")
 class FriendRequestImpl(
-        @Id @GeneratedValue(strategy = GenerationType.AUTO) override val id: Long,
+        @Id @GeneratedValue(strategy = GenerationType.AUTO) override val id: Long = 0,
 
         @ManyToOne(targetEntity = UserImpl::class, cascade = [CascadeType.REMOVE])
         @JoinColumn
-        override val sender: User,
+        override val sender: UserImpl,
 
-        @ManyToOne(targetEntity = UserImpl::class, cascade = [CascadeType.REMOVE])
+        @ManyToOne(targetEntity = UserImpl::class)
         @JoinColumn
-        override val receiver: User,
+        override val receiver: UserImpl,
 
-        override val date: LocalDateTime
-) : FriendRequest(id, sender, receiver, date)
+        override val date: LocalDateTime = LocalDateTime.now()
+) : FriendRequest(id, sender, receiver, date) {
+        constructor(fr: FriendRequest): this(
+                fr.id,
+                UserImpl(fr.sender),
+                UserImpl(fr.receiver),
+                fr.date
+        )
+}
