@@ -4,7 +4,7 @@ import com.github.dzeko14.socialNetwork.entities.User
 import javax.persistence.*
 
 @Entity(name = "Users")
-class UserImpl(
+data class UserImpl(
         @Id @GeneratedValue(strategy = GenerationType.AUTO) override val id: Long = 0,
         @Column(unique = true, columnDefinition = "varchar(20)") override val login: String,
         override val password: String = "",

@@ -3,7 +3,7 @@ package com.github.dzeko14.socialNetwork.provider
 import com.github.dzeko14.socialNetwork.entities.interfaces.Identifiable
 
 interface StorageProvider<T : Identifiable> {
-    fun save(obj: T)
+    fun save(obj: T): T
 
     fun delete(obj: T)
 

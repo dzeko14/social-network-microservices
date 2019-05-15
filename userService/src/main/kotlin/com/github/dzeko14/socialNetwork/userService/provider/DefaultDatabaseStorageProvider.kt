@@ -13,8 +13,8 @@ abstract class DefaultDatabaseStorageProvider<T : Identifiable, ImplT : T>(
 
     abstract fun updateObject(old: T, new: T): ImplT
 
-    override fun save(obj: T) {
-        repo.save(getObject(obj))
+    override fun save(obj: T): T {
+        return repo.save(getObject(obj))
     }
 
     override fun delete(obj: T) {

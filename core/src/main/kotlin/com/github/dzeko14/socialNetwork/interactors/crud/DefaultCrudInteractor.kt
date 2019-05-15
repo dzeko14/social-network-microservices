@@ -22,12 +22,13 @@ open class DefaultCrudInteractor<T: Identifiable> (
         return storage.getAll()
     }
 
-    override fun remove(obj: T) {
+    override fun remove(objId: Identifiable) {
+        val obj = storage.getById(objId)
         storage.delete(obj)
     }
 
-    override fun create(obj: T) {
-        storage.save(obj)
+    override fun create(obj: T): T {
+        return storage.save(obj)
     }
 
     override fun update(obj: T) {
