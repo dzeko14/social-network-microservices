@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
+@Suppress("UNCHECKED_CAST")
 internal class PostControllerTest {
 
 
@@ -46,11 +47,12 @@ internal class PostControllerTest {
     }
 
     @Test
+
     fun getAllPosts() {
         val user = userRepository.save(mockUser())
         postRepository.save(mockPost(user))
         postRepository.save(mockPost(user))
-        val posts = (postController.getAllPosts().body as List<Post>).map { PostImpl(it) }
+        val posts = (postController.getAllPosts().body as List<Post>)
         Assert.assertTrue("PostController.getAllPosts post1 failed", posts.any{p -> p.author.id == user.id})
     }
 

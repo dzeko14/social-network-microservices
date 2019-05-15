@@ -1,5 +1,6 @@
 package com.github.dzeko14.model
 
+import com.github.dzeko14.socialNetwork.userService.model.CommentImpl
 import com.github.dzeko14.socialNetwork.userService.model.PostImpl
 import com.github.dzeko14.socialNetwork.userService.model.UserImpl
 import kotlin.random.Random
@@ -20,5 +21,12 @@ fun mockPost(author: UserImpl, id: Long = 0): PostImpl {
             id = id,
             content = "test",
             author = author
+    )
+}
+
+fun mockComment(post: PostImpl): CommentImpl {
+    return CommentImpl(
+            content = "test",
+            post = post
     )
 }
