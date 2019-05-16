@@ -44,7 +44,7 @@ class FriendRequestController @Autowired constructor(
         }
     }
 
-    @PostMapping("/deny")
+    @PostMapping("/deny/{id}")
     fun denyFriendRequest(@PathVariable id: Long) {
         try {
             denyFriendRequestInteractor.deny(IdentifiableImpl(id))
