@@ -1,5 +1,6 @@
 package com.github.dzeko14.socialNetwork.userService.controller
 
+import com.github.dzeko14.socialNetwork.entities.FriendRequest
 import com.github.dzeko14.socialNetwork.entities.impl.IdentifiableImpl
 import com.github.dzeko14.socialNetwork.entities.interfaces.Identifiable
 import com.github.dzeko14.socialNetwork.exceptions.NoSuchUserException
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/friendRequest")
@@ -22,51 +24,47 @@ class FriendRequestController @Autowired constructor(
 ) {
     @PostMapping("/create/{requester}/{target}")
     fun makeFriendRequest(@PathVariable requester: Long,
-                          @PathVariable target: Long): ResponseEntity<Any> {
-        return try {
+                          @PathVariable target: Long) {
+        try {
             makeFriendsRequestInteractor.makeFriend(
                     IdentifiableImpl(requester),
                     IdentifiableImpl(target))
-            ResponseEntity.ok().build<Any>()
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
     @PostMapping("/approve/{id}")
-    fun approveFriendRequest(@PathVariable id: Long): ResponseEntity<Any> {
+    fun approveFriendRequest(@PathVariable id: Long) {
         return try {
             approveFriendRequestInteractor.approve(IdentifiableImpl(id))
-            ResponseEntity.ok().build<Any>()
         }
         catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
     @PostMapping("/deny")
-    fun denyFriendRequest(@PathVariable id: Long): ResponseEntity<Any> {
-        return try {
+    fun denyFriendRequest(@PathVariable id: Long) {
+        try {
             denyFriendRequestInteractor.deny(IdentifiableImpl(id))
-            ResponseEntity.ok().build<Any>()
         }
         catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
     @GetMapping("/receiver/{id}")
-    fun getUserFriendRequests(@PathVariable("id") userId: Long): ResponseEntity<Any> {
+    fun getUserFriendRequests(@PathVariable("id") userId: Long): List<FriendRequest> {
         return try {
-            val result = getUserFriendRequestInteractor.getFriendRequests(
+            getUserFriendRequestInteractor.getFriendRequests(
                     object : Identifiable {
                         override val id: Long = userId
             })
-            ResponseEntity.ok(result)
         } catch (e: NoSuchUserException) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 }

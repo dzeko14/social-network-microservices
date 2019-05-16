@@ -40,7 +40,7 @@ internal class CommentControllerTest {
 
     @Test
     fun createComment() {
-        val comment = commentController.createComment(mockComment(post)).body as Comment
+        val comment = commentController.createComment(mockComment(post))
 
         Assert.assertNotNull("CommentController.createComment failed",
                 commentRepository.findByIdOrNull(comment.id))
@@ -60,7 +60,7 @@ internal class CommentControllerTest {
         commentRepository.save(mockComment(post))
         commentRepository.save(mockComment(post))
 
-        val comments = (commentController.getAllComments().body as List<Comment>)
+        val comments = commentController.getAllComments()
         Assert.assertTrue("CommentController.getAllComments failed", comments.any{ c -> c.post.id == post.id})
     }
 
@@ -92,7 +92,7 @@ internal class CommentControllerTest {
         commentRepository.save(mockComment(post))
         commentRepository.save(mockComment(post))
 
-        val comments = (commentController.getPostComments(post.id).body as List<Comment>)
+        val comments = commentController.getPostComments(post.id)
         Assert.assertTrue("CommentController.getPostComments failed", comments.any{ c -> c.post.id == post.id})
     }
 }

@@ -31,7 +31,7 @@ internal class PostControllerTest {
     @Test
     fun createPost() {
         val user = userRepository.save(mockUser())
-        val post = postController.createPost(mockPost(user)).body as Post
+        val post = postController.createPost(mockPost(user))
 
         Assert.assertNotNull("PostController.createPost failed",
                 postRepository.findByIdOrNull(post.id))
@@ -52,7 +52,7 @@ internal class PostControllerTest {
         val user = userRepository.save(mockUser())
         postRepository.save(mockPost(user))
         postRepository.save(mockPost(user))
-        val posts = (postController.getAllPosts().body as List<Post>)
+        val posts = postController.getAllPosts()
         Assert.assertTrue("PostController.getAllPosts post1 failed", posts.any{p -> p.author.id == user.id})
     }
 
@@ -87,7 +87,7 @@ internal class PostControllerTest {
         postRepository.save(mockPost(user))
         postRepository.save(mockPost(user))
 
-        val posts = (postController.getUserPosts(user.id).body as List<Post>).map { PostImpl(it) }
+        val posts = postController.getUserPosts(user.id)
         Assert.assertTrue("PostController.getUserPosts post1 failed",  posts.any{p -> p.author.id == user.id})
     }
 
@@ -110,7 +110,7 @@ internal class PostControllerTest {
         friendshipRepository.save(friendShip)
         friendshipRepository.save(friendshipReversed)
 
-        val posts = (postController.getUserFriendsPosts(user.id).body as List<Post>).map { PostImpl(it) }
+        val posts = postController.getUserFriendsPosts(user.id)
         Assert.assertTrue("PostController.getUserPosts post1 failed", posts.any{p -> p.author.id == userFriend.id})
     }
 }

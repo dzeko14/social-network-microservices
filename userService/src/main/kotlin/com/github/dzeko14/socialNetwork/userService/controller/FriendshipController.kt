@@ -1,5 +1,6 @@
 package com.github.dzeko14.socialNetwork.userService.controller
 
+import com.github.dzeko14.socialNetwork.entities.User
 import com.github.dzeko14.socialNetwork.exceptions.NoSuchUserException
 import com.github.dzeko14.socialNetwork.interactors.friendship.GetUserFriendsInteractor
 import com.github.dzeko14.socialNetwork.interactors.friendship.RemoveFriendshipInteractor
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/friends")
@@ -16,28 +18,24 @@ class FriendshipController @Autowired constructor(
         private val removeFriendshipInteractor: RemoveFriendshipInteractor
 ) {
     @GetMapping("/{id}")
-    fun getFriends(@PathVariable id: Long): ResponseEntity<Any> {
+    fun getFriends(@PathVariable id: Long): List<User> {
         return try {
-            ResponseEntity.ok(
-                    getUserFriendsInteractor.get(IdentifiableImpl(id))
-            )
+            getUserFriendsInteractor.get(IdentifiableImpl(id))
         } catch (e: NoSuchUserException) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @DeleteMapping("/{remover}/{target}")
-    fun deleteFriendship(@PathVariable remover: Long, @PathVariable target: Long): ResponseEntity<Any> {
+    fun deleteFriendship(@PathVariable remover: Long, @PathVariable target: Long) {
         return try {
-            ResponseEntity.ok(
-                    removeFriendshipInteractor.remove(IdentifiableImpl(remover), IdentifiableImpl(target))
-            )
+            removeFriendshipInteractor.remove(IdentifiableImpl(remover), IdentifiableImpl(target))
         } catch (e: NoSuchUserException) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 }

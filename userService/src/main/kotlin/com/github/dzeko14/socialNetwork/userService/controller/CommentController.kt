@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/comment")
@@ -22,66 +23,64 @@ class CommentController @Autowired constructor(
         private val getPostCommentsInteractor: GetPostCommentsInteractor
 ) {
     @PostMapping
-    fun createComment(@RequestBody comment: CommentImpl): ResponseEntity<Any> {
+    fun createComment(@RequestBody comment: CommentImpl): Comment {
         return try {
-            ResponseEntity.ok(createIdentifiableInteractor.create(comment))
+            createIdentifiableInteractor.create(comment)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @DeleteMapping("/{id}")
-    fun deleteComment(@PathVariable id: Long): ResponseEntity<Any> {
-        return try {
+    fun deleteComment(@PathVariable id: Long) {
+        try {
             removeIdentifiableInteractor.remove(IdentifiableImpl(id))
-            ResponseEntity.ok().build<Any>()
         } catch (e: NoSuchObjectInStorageException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @GetMapping
-    fun getAllComments(): ResponseEntity<Any> {
+    fun getAllComments(): List<Comment> {
         return try {
-            ResponseEntity.ok(getAllIdentifiableInteractor.getAll())
+            getAllIdentifiableInteractor.getAll()
         } catch (e: NoSuchObjectInStorageException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @GetMapping("/{id}")
-    fun getCommentById(@PathVariable id: Long): ResponseEntity<Any> {
+    fun getCommentById(@PathVariable id: Long): Comment {
         return try {
-            ResponseEntity.ok(getIdentifiableInteractor.get(IdentifiableImpl(id)))
+            getIdentifiableInteractor.get(IdentifiableImpl(id))
         } catch (e: NoSuchObjectInStorageException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @PutMapping
-    fun updateComment(@RequestBody comment: CommentImpl): ResponseEntity<Any> {
-        return try {
+    fun updateComment(@RequestBody comment: CommentImpl) {
+        try {
             updateIdentifiableInteractor.update(comment)
-            ResponseEntity.ok().build<Any>()
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @GetMapping("/post/{id}")
-    fun getPostComments(@PathVariable id: Long): ResponseEntity<Any> {
+    fun getPostComments(@PathVariable id: Long): List<Comment> {
         return try {
-            ResponseEntity.ok(getPostCommentsInteractor.getPostComments(IdentifiableImpl(id)))
+            getPostCommentsInteractor.getPostComments(IdentifiableImpl(id))
         } catch (e: NoSuchObjectInStorageException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 }

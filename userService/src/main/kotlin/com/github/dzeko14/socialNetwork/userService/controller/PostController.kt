@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import java.lang.Exception
 
 @RestController
@@ -25,78 +26,75 @@ class PostController @Autowired constructor(
     private val getFriendsPostsInteractor: GetFriendsPostsInteractor
 ) {
     @PostMapping
-    fun createPost(@RequestBody post: PostImpl): ResponseEntity<Any> {
-        return try {
-            ResponseEntity.ok(createPostInteractor.create(post))
+    fun createPost(@RequestBody post: PostImpl): Post {
+        try {
+            return createPostInteractor.create(post)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @DeleteMapping("/{id}")
-    fun deletePost(@PathVariable id: Long): ResponseEntity<Any> {
-        return try {
+    fun deletePost(@PathVariable id: Long) {
+        try {
             deletePostInteractor.remove(IdentifiableImpl(id))
-            ResponseEntity.ok().build<Any>()
         } catch (e: NoSuchObjectInStorageException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @GetMapping
-    fun getAllPosts(): ResponseEntity<Any> {
+    fun getAllPosts(): List<Post> {
         return try {
-            ResponseEntity.ok(getAllIdentifiableInteractor.getAll())
+            getAllIdentifiableInteractor.getAll()
         } catch (e: NoSuchObjectInStorageException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @GetMapping("/{id}")
-    fun getPostById(@PathVariable id: Long): ResponseEntity<Any> {
+    fun getPostById(@PathVariable id: Long): Post {
         return try {
-            ResponseEntity.ok(getIdentifiableInteractor.get(IdentifiableImpl(id)))
+            getIdentifiableInteractor.get(IdentifiableImpl(id))
         } catch (e: NoSuchObjectInStorageException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @PutMapping
-    fun updatePost(@RequestBody post: PostImpl): ResponseEntity<Any> {
-        return try {
+    fun updatePost(@RequestBody post: PostImpl) {
+        try {
             updateIdentifiableInteractor.update(post)
-            ResponseEntity.ok().build<Any>()
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @GetMapping("/user/{id}")
-    fun getUserPosts(@PathVariable id: Long): ResponseEntity<Any> {
-        return try {
-            ResponseEntity.ok(getMyPostsInteractor.getPosts(IdentifiableImpl(id)))
-
+    fun getUserPosts(@PathVariable id: Long): List<Post> {
+        try {
+             return getMyPostsInteractor.getPosts(IdentifiableImpl(id))
         } catch (e: NoSuchObjectInStorageException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @GetMapping("/user/{id}/friends")
-    fun getUserFriendsPosts(@PathVariable id: Long): ResponseEntity<Any> {
-        return try {
-            ResponseEntity.ok(getFriendsPostsInteractor.getFriendsPost(IdentifiableImpl(id)))
+    fun getUserFriendsPosts(@PathVariable id: Long): List<Post> {
+        try {
+            return getFriendsPostsInteractor.getFriendsPost(IdentifiableImpl(id))
         } catch (e: NoSuchObjectInStorageException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 }

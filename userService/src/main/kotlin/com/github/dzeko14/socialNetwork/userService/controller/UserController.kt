@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/users")
@@ -30,69 +31,66 @@ class UserController @Autowired constructor(
 ) {
 
     @PostMapping
-    fun createUser(@RequestBody user: UserImpl): ResponseEntity<String> {
-        return try {
+    fun createUser(@RequestBody user: UserImpl) {
+        try {
             registerUserInteractor.register(user)
-            ResponseEntity.ok().build<String>()
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
     }
 
     @GetMapping("/id/{id}")
-    fun getUserById(@PathVariable("id") id: Long): ResponseEntity<Any> {
+    fun getUserById(@PathVariable("id") id: Long): User {
         return try {
-            val user = getUserByIdInteractor.get(
+           getUserByIdInteractor.get(
                     object: Identifiable {
                         override val id: Long = id
                     }
             )
 
-            ResponseEntity.ok(user)
+           // ResponseEntity.ok(user)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+            //ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
     }
 
     @GetMapping
-    fun getAllUsers(): ResponseEntity<Any> {
+    fun getAllUsers(): List<User> {
         return try {
-            val user = getAllUsersInteractor.getAll()
-            ResponseEntity.ok(user)
+            getAllUsersInteractor.getAll()
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
     @PutMapping
-    fun updateUserInfo(@RequestBody userUpdateInfo: UserUpdateInfo): ResponseEntity<Any> {
-        return try {
-            updateUserInfoInteractor.update(userUpdateInfo.user, userUpdateInfo.password)
-            ResponseEntity.ok().build<Any>()
+    fun updateUserInfo(@RequestBody userUpdateInfo: UserUpdateInfo) {
+        try {
+            updateUserInfoInteractor.update(userUpdateInfo.user,
+                    userUpdateInfo.password)
         }  catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
     @DeleteMapping
-    fun deleteUser(@RequestBody user: UserImpl): ResponseEntity<Any> {
-        return try {
+    fun deleteUser(@RequestBody user: UserImpl) {
+        try {
             deleteUserInteractor.delete(user)
-            ResponseEntity.ok().build<Any>()
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
     @PostMapping("/login")
-    fun loginUser(@RequestBody userLogin: UserLogin): ResponseEntity<Any> {
+    fun loginUser(@RequestBody userLogin: UserLogin): Token {
         return try {
-            val token = loginUserInteractor.login(userLogin.user, userLogin.token ?: Token.empty())
-            ResponseEntity.ok(token)
+            loginUserInteractor.login(userLogin.user, userLogin.token ?: Token.empty())
         } catch (e: WrongPasswordException) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 }
