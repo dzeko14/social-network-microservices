@@ -7,29 +7,17 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 
 interface FriendshipClient {
-    @RequestMapping(method = [RequestMethod.POST],
-            value = ["/friendRequest/create/{requester}/{target}"])
-    fun makeFriendRequest(@PathVariable requester: Long, @PathVariable target: Long)
+    fun makeFriendRequest( requester: Long, target: Long)
 
-    @RequestMapping(method = [RequestMethod.POST],
-            value = ["/friendRequest/approve/{id}"])
-    fun approveFriendRequest(@PathVariable id: Long)
+    fun approveFriendRequest( id: Long)
 
-    @RequestMapping(method = [RequestMethod.POST],
-            value = ["/friendRequest/deny/{id}"])
-    fun denyFriendRequest(@PathVariable id: Long)
+    fun denyFriendRequest( id: Long)
 
-    @RequestMapping(method = [RequestMethod.GET],
-            value = ["/friendRequest/receiver/{id}"])
-    fun getUserFriendRequests(@PathVariable("id") userId: Long)
+    fun getUserFriendRequests( userId: Long)
             : List<FriendRequestImpl>
 
-    @RequestMapping(method = [RequestMethod.POST],
-            value = ["/friends/{id}"])
-    fun getFriends(@PathVariable("id") userId: Long)
+    fun getFriends(userId: Long)
             : List<UserImpl>
 
-    @RequestMapping(method = [RequestMethod.DELETE],
-            value = ["/friends/{remover}/{target}"])
-    fun deleteFriendship(@PathVariable remover: Long, @PathVariable target: Long)
+    fun deleteFriendship( remover: Long,  target: Long)
 }
