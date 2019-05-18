@@ -7,7 +7,7 @@ import com.github.dzeko14.socialNetwork.entities.Token
 import com.github.dzeko14.socialNetwork.entities.User
 
 interface UsersClient {
-    fun createUser(user: User)
+    fun createUser(user: User): UserImpl
 
     fun getUserById(userId: Long): UserImpl
 

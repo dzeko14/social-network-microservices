@@ -31,9 +31,9 @@ class UserController @Autowired constructor(
 ) {
 
     @PostMapping
-    fun createUser(@RequestBody user: UserImpl) {
+    fun createUser(@RequestBody user: UserImpl): User {
         try {
-            registerUserInteractor.register(user)
+            return registerUserInteractor.register(user)
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }

@@ -92,8 +92,8 @@ class SocialNetworkServiceClientImpl @Autowired constructor(
         return socialNetworkServiceClient.getUserFriendsPosts(id)
     }
 
-    override fun createUser(user: User) {
-        socialNetworkServiceClient.createUser(user)
+    override fun createUser(user: User): UserImpl {
+        return socialNetworkServiceClient.createUser(user)
     }
 
     override fun getUserById(userId: Long): UserImpl {

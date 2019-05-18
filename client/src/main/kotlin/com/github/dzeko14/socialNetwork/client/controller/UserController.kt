@@ -1,14 +1,13 @@
 package com.github.dzeko14.socialNetwork.client.controller
 
 import com.github.dzeko14.socialNetwork.client.feignClient.UsersClient
-import com.github.dzeko14.socialNetwork.client.model.TokenRequest
-import com.github.dzeko14.socialNetwork.client.model.UserImpl
-import com.github.dzeko14.socialNetwork.client.model.UserLogin
-import com.github.dzeko14.socialNetwork.client.model.UserUpdateInfo
+import com.github.dzeko14.socialNetwork.client.model.*
 import com.github.dzeko14.socialNetwork.client.validator.TokenValidator
 import com.github.dzeko14.socialNetwork.entities.Token
 import com.github.dzeko14.socialNetwork.entities.User
+import com.github.dzeko14.socialNetwork.rabbitmq.USER_QUEUE
 import feign.FeignException
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -18,23 +17,27 @@ import org.springframework.web.server.ResponseStatusException
 @RequestMapping("/users")
 class UserController @Autowired constructor(
         val usersClient: UsersClient,
-        val tokenValidator: TokenValidator
+        val tokenValidator: TokenValidator,
+        private val rabbitTemplate: RabbitTemplate
 ) {
 
     @PostMapping
     fun createUser(@RequestBody user: UserImpl) {
-        try {
+        val u = try {
             usersClient.createUser(user)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
+        rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User created", u))
     }
 
     @GetMapping("/id/{id}")
     fun getUserById(@PathVariable("id") id: Long, @RequestBody token: Token): User {
         return try {
             tokenValidator.validate(token)
-            usersClient.getUserById(id)
+            val u = usersClient.getUserById(id)
+            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User get", u))
+            u
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
@@ -55,6 +58,7 @@ class UserController @Autowired constructor(
         try {
             tokenValidator.validate(tokenRequest)
             usersClient.updateUserInfo(tokenRequest.body)
+            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User updated", tokenRequest.body.user))
         }  catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
@@ -65,6 +69,7 @@ class UserController @Autowired constructor(
         try {
             tokenValidator.validate(tokenRequest)
             usersClient.deleteUser(tokenRequest.body)
+            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User deleted", tokenRequest.body))
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }

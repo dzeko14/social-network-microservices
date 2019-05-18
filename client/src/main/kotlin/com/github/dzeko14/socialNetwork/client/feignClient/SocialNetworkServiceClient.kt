@@ -82,7 +82,7 @@ interface SocialNetworkServiceClient {
     fun getUserFriendsPosts(@PathVariable id: Long): List<PostImpl>
 
     @RequestMapping(method = [RequestMethod.POST], value = ["/users"])
-    fun createUser(user: User)
+    fun createUser(user: User): UserImpl
 
     @RequestMapping(method = [RequestMethod.GET], value = ["/users/id/{userId}"])
     fun getUserById(@PathVariable("userId") userId: Long): UserImpl

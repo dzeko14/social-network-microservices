@@ -8,10 +8,11 @@ class RegisterUserInteractorImpl(
         private val userStorageProvider: StorageProvider<User>
 ) : RegisterUserInteractor {
 
-    override fun register(user: User) {
+    override fun register(user: User): User {
         if (user.login.isEmpty() || user.password.isEmpty())
             throw EmptyFieldException(user)
 
-        userStorageProvider.save(user)
+        val u = userStorageProvider.save(user)
+        return User.withoutPassword(u)
     }
 }
