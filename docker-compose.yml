@@ -1,0 +1,53 @@
+version: '3'
+
+services:            
+    eurika-server:
+        container_name: eurika-server
+        build:
+            context: ./eurikaServer
+            dockerfile: Dockerfile
+        ports:
+            - "8761:8761"               
+        networks:
+            - my-network  
+                   
+    user-service:
+        depends_on:
+            - eurika-server    
+        container_name: user-service
+        build:
+            context: ./userService
+            dockerfile: Dockerfile
+        ports:
+            - "8181:8181"
+        networks:
+            - my-network  
+                   
+    client-service:
+        depends_on:
+            - eurika-server
+            - user-service
+        container_name: client-service
+        build:
+            context: ./client
+            dockerfile: Dockerfile
+        ports:
+            - "8080:8080"
+        networks:
+            - my-network   
+
+    message-consumer:
+        depends_on:
+            - eurika-server
+        container_name: message-consumer
+        build:
+            context: ./messageConsumer
+            dockerfile: Dockerfile
+        ports:
+            - "8392:8392"
+        networks:
+            - my-network   
+                
+networks:
+  my-network:
+    driver: bridge

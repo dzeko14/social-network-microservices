@@ -6,8 +6,6 @@ plugins {
 	id 'io.spring.dependency-management' version "0.6.0.RELEASE"
 }
 
-group = "com.github.dzeko14.socialNetwork"
-version = "0.0.1-SNAPSHOT"
 sourceCompatibility = '1.8'
 
 ext {

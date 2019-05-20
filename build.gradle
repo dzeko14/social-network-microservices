@@ -9,7 +9,7 @@ allprojects {
 
 subprojects {
 	group = 'com.github.dzeko14.socialNetwork'
-    version = '1.0'
+    version = '1'
 	
 }
 
