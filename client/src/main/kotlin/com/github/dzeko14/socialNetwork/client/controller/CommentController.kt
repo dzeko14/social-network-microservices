@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
-@RequestMapping("/comment")
+@RequestMapping("/comments")
 class CommentController @Autowired constructor(
         private val commentClient: CommentClient,
         private val tokenValidator: TokenValidator,

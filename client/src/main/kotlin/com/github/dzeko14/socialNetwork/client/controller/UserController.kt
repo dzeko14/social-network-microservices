@@ -21,6 +21,11 @@ class UserController @Autowired constructor(
         private val rabbitTemplate: RabbitTemplate
 ) {
 
+    @GetMapping("/id")
+    fun getUserIdByToken(@RequestBody token: Token): Long {
+
+    }
+
     @PostMapping
     fun createUser(@RequestBody user: UserImpl) {
         val u = try {
