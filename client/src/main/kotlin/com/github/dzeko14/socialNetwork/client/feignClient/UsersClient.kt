@@ -18,4 +18,6 @@ interface UsersClient {
     fun deleteUser(user: UserImpl)
 
     fun loginUser(userLogin: UserLogin): Token
+
+    fun getUserIdByToken(token: Token): Long
 }

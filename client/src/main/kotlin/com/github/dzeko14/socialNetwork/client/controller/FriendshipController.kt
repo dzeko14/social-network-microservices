@@ -17,9 +17,9 @@ class FriendshipController @Autowired constructor(
         private val tokenValidator: TokenValidator
 ) {
     @GetMapping("/{id}")
-    fun getFriends(@PathVariable id: Long, @RequestBody token: Token): List<User> {
+    fun getFriends(@PathVariable id: Long, @RequestParam token: String): List<User> {
         return try {
-            tokenValidator.validate(token)
+            //tokenValidator.validate(Token(token))
             friendshipClient.getFriends(id)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -28,9 +28,9 @@ class FriendshipController @Autowired constructor(
 
     @DeleteMapping("/{remover}/{target}")
     fun deleteFriendship(@PathVariable remover: Long, @PathVariable target: Long,
-                         @RequestBody token: Token) {
+                         @RequestParam token: String) {
         return try {
-            tokenValidator.validate(token)
+            //tokenValidator.validate(Token(token))
             friendshipClient.deleteFriendship(remover, target)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())

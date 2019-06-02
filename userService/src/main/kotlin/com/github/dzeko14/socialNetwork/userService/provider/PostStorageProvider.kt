@@ -9,6 +9,7 @@ import com.github.dzeko14.socialNetwork.userService.repository.PostRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
+import java.util.*
 
 @Component
 class PostStorageProvider @Autowired constructor(
@@ -24,7 +25,7 @@ class PostStorageProvider @Autowired constructor(
                 id = old.id,
                 content = new.content,
                 author = UserImpl(old.author),
-                date = LocalDateTime.now()
+                date = Date().time
         )
     }
 

@@ -3,6 +3,7 @@ package com.github.dzeko14.socialNetwork.userService.configuration
 import com.github.dzeko14.socialNetwork.entities.User
 import com.github.dzeko14.socialNetwork.interactors.user.*
 import com.github.dzeko14.socialNetwork.provider.StorageProvider
+import com.github.dzeko14.socialNetwork.provider.UserByLoginProvider
 import com.github.dzeko14.socialNetwork.validator.PasswordValidator
 import com.github.dzeko14.socialNetwork.validator.TokenValidator
 import org.springframework.beans.factory.annotation.Qualifier
@@ -32,8 +33,11 @@ class UserConfig {
 
     @Bean
     fun loginUserInteractor(tokenValidator: TokenValidator,
-                            passwordValidator: PasswordValidator): LoginUserInteractor {
-        return LoginUserInteractorImpl(passwordValidator, tokenValidator)
+                            passwordValidator: PasswordValidator,
+                            userByLoginProvider: UserByLoginProvider,
+                            getUserIdByTokenInteractor: GetUserIdByTokenInteractor): LoginUserInteractor {
+        return LoginUserInteractorImpl(passwordValidator, tokenValidator, userByLoginProvider,
+                getUserIdByTokenInteractor)
     }
 
     @Bean

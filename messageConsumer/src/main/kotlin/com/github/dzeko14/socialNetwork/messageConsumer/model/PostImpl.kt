@@ -2,6 +2,7 @@ package com.github.dzeko14.socialNetwork.messageConsumer.model
 
 import com.github.dzeko14.socialNetwork.entities.Post
 import java.time.LocalDateTime
+import java.util.*
 import javax.persistence.*
 
 @Embeddable
@@ -13,7 +14,7 @@ data class PostImpl(
             AttributeOverride(name = "id", column = Column(name ="user_id"))
         ])
         override val author: UserImpl,
-        override val date: LocalDateTime = LocalDateTime.now()
+        override val date: Long = Date().time
 ) : Post(id, content, author, date) {
 
     constructor(p: Post): this(p.id, p.content, UserImpl(p.author), p.date)

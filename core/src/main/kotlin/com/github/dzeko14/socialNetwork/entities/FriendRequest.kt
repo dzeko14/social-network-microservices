@@ -8,5 +8,5 @@ abstract class FriendRequest(
         override val id: Long = 0,
         open val sender: User = User.emptyObject(),
         open val receiver: User = User.emptyObject(),
-        open val date: LocalDateTime = LocalDateTime.MIN
+        open val date: Long = Date().time
 ) : Identifiable

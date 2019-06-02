@@ -21,9 +21,9 @@ class UserController @Autowired constructor(
         private val rabbitTemplate: RabbitTemplate
 ) {
 
-    @GetMapping("/id")
-    fun getUserIdByToken(@RequestBody token: Token): Long {
-
+    @PostMapping("/id")
+    fun getUserIdByToken(@RequestParam token: String): Long {
+        return usersClient.getUserIdByToken(Token(token))
     }
 
     @PostMapping
@@ -37,9 +37,9 @@ class UserController @Autowired constructor(
     }
 
     @GetMapping("/id/{id}")
-    fun getUserById(@PathVariable("id") id: Long, @RequestBody token: Token): User {
+    fun getUserById(@PathVariable("id") id: Long, @RequestParam token: String): User {
         return try {
-            tokenValidator.validate(token)
+           // tokenValidator.validate(Token(token))
             val u = usersClient.getUserById(id)
             rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User get", u))
             u
@@ -49,9 +49,9 @@ class UserController @Autowired constructor(
     }
 
     @GetMapping
-    fun getAllUsers(@RequestBody token: Token): List<User> {
+    fun getAllUsers(@RequestParam token: String): List<User> {
         return try {
-            tokenValidator.validate(token)
+            //tokenValidator.validate(Token(token))
             usersClient.getUsers()
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -59,22 +59,23 @@ class UserController @Autowired constructor(
     }
 
     @PutMapping
-    fun updateUserInfo(@RequestBody tokenRequest: TokenRequest<UserUpdateInfo>) {
+    fun updateUserInfo(@RequestBody tokenRequest: UserUpdateInfo,
+                       @RequestParam token: String) {
         try {
-            tokenValidator.validate(tokenRequest)
-            usersClient.updateUserInfo(tokenRequest.body)
-            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User updated", tokenRequest.body.user))
+            //tokenValidator.validate(Token(token))
+            usersClient.updateUserInfo(tokenRequest)
+            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User updated", tokenRequest.user))
         }  catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
     }
 
     @DeleteMapping
-    fun deleteUser(@RequestBody tokenRequest: TokenRequest<UserImpl>) {
+    fun deleteUser(@RequestBody tokenRequest: UserImpl, @RequestParam token: String) {
         try {
-            tokenValidator.validate(tokenRequest)
-            usersClient.deleteUser(tokenRequest.body)
-            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User deleted", tokenRequest.body))
+            tokenValidator.validate(Token(token))
+            usersClient.deleteUser(tokenRequest)
+            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User deleted", tokenRequest))
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }

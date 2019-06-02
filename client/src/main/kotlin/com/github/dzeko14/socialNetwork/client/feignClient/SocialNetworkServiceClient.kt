@@ -51,7 +51,7 @@ interface SocialNetworkServiceClient {
     fun getUserFriendRequests(@PathVariable("id") userId: Long)
             : List<FriendRequestImpl>
 
-    @RequestMapping(method = [RequestMethod.POST],
+    @RequestMapping(method = [RequestMethod.GET],
             value = ["/friends/{id}"])
     fun getFriends(@PathVariable("id") userId: Long)
             : List<UserImpl>
@@ -98,4 +98,7 @@ interface SocialNetworkServiceClient {
 
     @RequestMapping(method = [RequestMethod.POST], value = ["/users/login"])
     fun loginUser(userLogin: UserLogin): Token
+
+    @RequestMapping(method = [RequestMethod.POST], value = ["/users/id"])
+    fun getUserIdByToken(token: Token): Long
 }

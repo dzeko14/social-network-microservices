@@ -2,6 +2,7 @@ package com.github.dzeko14.socialNetwork.client.model
 
 import com.github.dzeko14.socialNetwork.entities.FriendRequest
 import java.time.LocalDateTime
+import java.util.*
 
 class FriendRequestImpl(
         override val id: Long = 0,
@@ -10,7 +11,7 @@ class FriendRequestImpl(
 
         override val receiver: UserImpl,
 
-        override val date: LocalDateTime = LocalDateTime.now()
+        override val date: Long = Date().time
 ) : FriendRequest(id, sender, receiver, date) {
         constructor(fr: FriendRequest): this(
                 fr.id,

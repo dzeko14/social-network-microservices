@@ -18,7 +18,7 @@ class FriendRequestImpl(
         @JoinColumn
         override val receiver: UserImpl,
 
-        override val date: LocalDateTime = LocalDateTime.now()
+        override val date: Long = Date().time
 ) : FriendRequest(id, sender, receiver, date) {
         constructor(fr: FriendRequest): this(
                 fr.id,

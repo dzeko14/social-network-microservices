@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.github.dzeko14.socialNetwork.entities.Comment
 import com.github.dzeko14.socialNetwork.entities.Post
 import java.time.LocalDateTime
+import java.util.*
 import javax.persistence.*
 
 @Entity(name = "Posts")
@@ -13,7 +14,7 @@ data class PostImpl(
         override val content: String,
         @ManyToOne(targetEntity = UserImpl::class)
         override val author: UserImpl,
-        override val date: LocalDateTime = LocalDateTime.now()
+        override val date: Long = Date().time
 ) : Post(id, content, author, date) {
     @JsonIgnore
     @OneToMany(targetEntity = CommentImpl::class, fetch = FetchType.EAGER, mappedBy = "post")

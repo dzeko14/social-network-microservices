@@ -34,7 +34,7 @@ class TokenValidatorImpl @Autowired constructor(
 
     override fun generateToken(user: User): Token {
         return object: Token(
-                "${user.login}--${encodePassword(user.password)}--${generateExpireDate()}"
+                "${user.login}--${user.id}--${encodePassword(user.password)}--${generateExpireDate()}"
         ){ }
     }
 

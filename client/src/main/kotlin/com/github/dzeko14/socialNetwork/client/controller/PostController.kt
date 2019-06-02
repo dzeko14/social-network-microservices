@@ -25,10 +25,11 @@ class PostController @Autowired constructor(
     private val rabbitTemplate: RabbitTemplate
 ) {
     @PostMapping
-    fun createPost(@RequestBody post: TokenRequest<PostImpl>): Post {
+    fun createPost(@RequestBody post: PostImpl,
+                   @RequestParam token: String): Post {
         try {
-            tokenValidator.validate(post)
-            val p = postClient.createPost(post.body)
+           // tokenValidator.validate(Token(token))
+            val p = postClient.createPost(post)
             rabbitTemplate.convertAndSend(POST_QUEUE, RabbitMQMessage("Post created", p))
             return p
         } catch (e: FeignException) {
@@ -37,9 +38,9 @@ class PostController @Autowired constructor(
     }
 
     @DeleteMapping("/{id}")
-    fun deletePost(@PathVariable id: Long, @RequestBody token: Token) {
+    fun deletePost(@PathVariable id: Long, @RequestParam token: String) {
         try {
-            tokenValidator.validate(token)
+            //tokenValidator.validate(Token(token))
             val post = postClient.getPostById(id)
             postClient.deletePost(id)
             rabbitTemplate.convertAndSend(POST_QUEUE, RabbitMQMessage("Post deleted", post))
@@ -49,9 +50,9 @@ class PostController @Autowired constructor(
     }
 
     @GetMapping
-    fun getAllPosts(@RequestBody token: Token): List<Post> {
+    fun getAllPosts(@RequestParam token: String): List<Post> {
         return try {
-            tokenValidator.validate(token)
+           // tokenValidator.validate(Token(token))
             postClient.getPosts()
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -59,9 +60,9 @@ class PostController @Autowired constructor(
     }
 
     @GetMapping("/{id}")
-    fun getPostById(@PathVariable id: Long, @RequestBody token: Token): Post {
+    fun getPostById(@PathVariable id: Long, @RequestParam token: String): Post {
         return try {
-            tokenValidator.validate(token)
+            //tokenValidator.validate(Token(token))
             postClient.getPostById(id)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -69,20 +70,21 @@ class PostController @Autowired constructor(
     }
 
     @PutMapping
-    fun updatePost(@RequestBody post: TokenRequest<PostImpl>) {
+    fun updatePost(@RequestBody post: PostImpl,
+                   @RequestParam token: String) {
         try {
-            tokenValidator.validate(post)
-            postClient.updatePost(post.body)
-            rabbitTemplate.convertAndSend(POST_QUEUE, RabbitMQMessage("Post updated", post.body))
+            //tokenValidator.validate(Token(token))
+            postClient.updatePost(post)
+            rabbitTemplate.convertAndSend(POST_QUEUE, RabbitMQMessage("Post updated", post))
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
     }
 
     @GetMapping("/user/{id}")
-    fun getUserPosts(@PathVariable id: Long, @RequestBody token: Token): List<Post> {
+    fun getUserPosts(@PathVariable id: Long, @RequestParam token: String): List<Post> {
         try {
-            tokenValidator.validate(token)
+            //tokenValidator.validate(Token(token))
             return postClient.getUserPosts(id)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -90,9 +92,9 @@ class PostController @Autowired constructor(
     }
 
     @GetMapping("/user/{id}/friends")
-    fun getUserFriendsPosts(@PathVariable id: Long, @RequestBody token: Token): List<Post> {
+    fun getUserFriendsPosts(@PathVariable id: Long, @RequestParam token: String): List<Post> {
         try {
-            tokenValidator.validate(token)
+            //tokenValidator.validate(Token(token))
             return postClient.getUserFriendsPosts(id)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())

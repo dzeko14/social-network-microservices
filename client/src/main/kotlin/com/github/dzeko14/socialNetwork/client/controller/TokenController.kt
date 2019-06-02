@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -13,7 +14,7 @@ class TokenController @Autowired constructor(
         private val tokenValidator: TokenValidator
 ) {
     @PostMapping("/token/validate")
-    fun validateToken(@RequestBody token: Token) {
-        tokenValidator.validate(token)
+    fun validateToken(@RequestParam token: String) {
+        tokenValidator.validate(Token(token))
     }
 }

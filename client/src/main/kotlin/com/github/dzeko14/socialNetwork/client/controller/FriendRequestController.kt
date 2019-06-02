@@ -19,9 +19,9 @@ class FriendRequestController @Autowired constructor(
     @PostMapping("/create/{requester}/{target}")
     fun makeFriendRequest(@PathVariable requester: Long,
                           @PathVariable target: Long,
-                          @RequestBody token: Token) {
+                          @RequestParam token: String) {
         try {
-            tokenValidator.validate(token)
+            //tokenValidator.validate(Token(token))
             friendshipClient.makeFriendRequest(requester, target)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -29,9 +29,9 @@ class FriendRequestController @Autowired constructor(
     }
 
     @PostMapping("/approve/{id}")
-    fun approveFriendRequest(@PathVariable id: Long, @RequestBody token: Token) {
+    fun approveFriendRequest(@PathVariable id: Long, @RequestParam token: String) {
         return try {
-            tokenValidator.validate(token)
+           // tokenValidator.validate(Token(token))
             friendshipClient.approveFriendRequest(id)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -39,9 +39,9 @@ class FriendRequestController @Autowired constructor(
     }
 
     @PostMapping("/deny/{id}")
-    fun denyFriendRequest(@PathVariable id: Long, @RequestBody token: Token) {
+    fun denyFriendRequest(@PathVariable id: Long, @RequestParam token: String) {
         try {
-            tokenValidator.validate(token)
+           // tokenValidator.validate(Token(token))
             friendshipClient.denyFriendRequest(id)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -50,9 +50,9 @@ class FriendRequestController @Autowired constructor(
 
     @GetMapping("/receiver/{id}")
     fun getUserFriendRequests(@PathVariable("id") userId: Long,
-                              @RequestBody token: Token): List<FriendRequest> {
+                              @RequestParam token: String): List<FriendRequest> {
         return try {
-            tokenValidator.validate(token)
+            //tokenValidator.validate(Token(token))
             friendshipClient.getUserFriendRequests(userId)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())

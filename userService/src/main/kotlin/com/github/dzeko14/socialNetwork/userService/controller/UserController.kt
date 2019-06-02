@@ -4,12 +4,9 @@ import com.github.dzeko14.socialNetwork.entities.Token
 import com.github.dzeko14.socialNetwork.entities.User
 import com.github.dzeko14.socialNetwork.entities.interfaces.Identifiable
 import com.github.dzeko14.socialNetwork.exceptions.WrongPasswordException
-import com.github.dzeko14.socialNetwork.interactors.user.RegisterUserInteractor
 import com.github.dzeko14.socialNetwork.interactors.crud.GetAllIdentifiableInteractor
 import com.github.dzeko14.socialNetwork.interactors.crud.GetIdentifiableInteractor
-import com.github.dzeko14.socialNetwork.interactors.user.DeleteUserInteractor
-import com.github.dzeko14.socialNetwork.interactors.user.LoginUserInteractor
-import com.github.dzeko14.socialNetwork.interactors.user.UpdateUserInfoInteractor
+import com.github.dzeko14.socialNetwork.interactors.user.*
 import com.github.dzeko14.socialNetwork.userService.model.UserImpl
 import com.github.dzeko14.socialNetwork.userService.model.UserLogin
 import com.github.dzeko14.socialNetwork.userService.model.UserUpdateInfo
@@ -27,8 +24,13 @@ class UserController @Autowired constructor(
         val getAllUsersInteractor: GetAllIdentifiableInteractor<User>,
         val updateUserInfoInteractor: UpdateUserInfoInteractor,
         val deleteUserInteractor: DeleteUserInteractor,
-        val loginUserInteractor: LoginUserInteractor
+        val loginUserInteractor: LoginUserInteractor,
+        val getUserIdByTokenInteractor: GetUserIdByTokenInteractor
 ) {
+    @PostMapping("/id")
+    fun getUserIdByToke(@RequestBody token: Token): Long {
+        return getUserIdByTokenInteractor.getUserIdByToken(token)
+    }
 
     @PostMapping
     fun createUser(@RequestBody user: UserImpl): User {

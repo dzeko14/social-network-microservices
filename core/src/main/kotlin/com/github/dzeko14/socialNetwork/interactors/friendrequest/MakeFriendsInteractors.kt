@@ -8,6 +8,7 @@ import com.github.dzeko14.socialNetwork.exceptions.NoSuchUserException
 import com.github.dzeko14.socialNetwork.provider.StorageProvider
 import java.rmi.NoSuchObjectException
 import java.time.LocalDateTime
+import java.util.*
 
 class MakeFriendsInteractors(
         private val friendshipStorageProvider: StorageProvider<Friendship>,
@@ -58,7 +59,7 @@ class MakeFriendsInteractors(
         val request = object : FriendRequest(
                 sender = requester,
                 receiver = target,
-                date = LocalDateTime.now()){}
+                date = Date().time){}
 
         friendRequestStorageProvider.save(request)
     }

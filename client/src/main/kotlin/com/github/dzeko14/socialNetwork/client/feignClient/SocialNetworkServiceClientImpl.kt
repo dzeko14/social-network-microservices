@@ -115,4 +115,8 @@ class SocialNetworkServiceClientImpl @Autowired constructor(
     override fun loginUser(userLogin: UserLogin): Token {
         return socialNetworkServiceClient.loginUser(userLogin)
     }
+
+    override fun getUserIdByToken(token: Token): Long {
+        return socialNetworkServiceClient.getUserIdByToken(token)
+    }
 }

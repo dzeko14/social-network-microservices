@@ -25,10 +25,11 @@ class CommentController @Autowired constructor(
         private val rabbitTemplate: RabbitTemplate
 ) {
     @PostMapping
-    fun createComment(@RequestBody comment: TokenRequest<CommentImpl>): Comment {
+    fun createComment(@RequestBody comment: CommentImpl,
+                      @RequestParam token: String): Comment {
         return try {
-            tokenValidator.validate(comment)
-            val c = commentClient.createComment(comment.body)
+            //tokenValidator.validate(Token(token))
+            val c = commentClient.createComment(comment)
             rabbitTemplate.convertAndSend(COMMENT_QUEUE, RabbitMQMessage("Comment created", c))
             c
         } catch (e: FeignException) {
@@ -37,9 +38,10 @@ class CommentController @Autowired constructor(
     }
 
     @DeleteMapping("/{id}")
-    fun deleteComment(@PathVariable id: Long, @RequestBody token: Token) {
+    fun deleteComment(@PathVariable id: Long,
+                      @RequestParam token: String) {
         try {
-            tokenValidator.validate(token)
+           // tokenValidator.validate(Token(token))
             val c = commentClient.getCommentById(id)
             commentClient.deleteComment(id)
             rabbitTemplate.convertAndSend(COMMENT_QUEUE, RabbitMQMessage("Comment deleted", c))
@@ -49,9 +51,9 @@ class CommentController @Autowired constructor(
     }
 
     @GetMapping
-    fun getAllComments(@RequestBody token: Token): List<Comment> {
+    fun getAllComments(@RequestParam token: String): List<Comment> {
         return try {
-            tokenValidator.validate(token)
+           // tokenValidator.validate(Token(token))
             commentClient.getComments()
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -59,9 +61,9 @@ class CommentController @Autowired constructor(
     }
 
     @GetMapping("/{id}")
-    fun getCommentById(@PathVariable id: Long, @RequestBody token: Token): Comment {
+    fun getCommentById(@PathVariable id: Long, @RequestParam token: String): Comment {
         return try {
-            tokenValidator.validate(token)
+           // tokenValidator.validate(Token(token))
             commentClient.getCommentById(id)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -69,10 +71,11 @@ class CommentController @Autowired constructor(
     }
 
     @PutMapping
-    fun updateComment(@RequestBody comment:  TokenRequest<CommentImpl>) {
+    fun updateComment(@RequestBody comment:  CommentImpl,
+                      @RequestParam token: String) {
         try {
-            tokenValidator.validate(comment)
-            commentClient.updateComment(comment.body)
+           // tokenValidator.validate(Token(token))
+            commentClient.updateComment(comment)
             rabbitTemplate.convertAndSend(COMMENT_QUEUE, RabbitMQMessage("Comment updated", comment))
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -80,9 +83,9 @@ class CommentController @Autowired constructor(
     }
 
     @GetMapping("/post/{id}")
-    fun getPostComments(@PathVariable id: Long, @RequestBody token: Token): List<Comment> {
+    fun getPostComments(@PathVariable id: Long, @RequestParam token: String): List<Comment> {
         return try {
-            tokenValidator.validate(token)
+            //tokenValidator.validate(Token(token))
             commentClient.getPostComments(id)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
