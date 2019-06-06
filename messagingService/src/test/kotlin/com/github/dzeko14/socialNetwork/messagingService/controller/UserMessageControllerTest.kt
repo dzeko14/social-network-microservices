@@ -44,7 +44,7 @@ internal class UserMessageControllerTest {
     @Test
     fun getAll() {
 
-        val chat = chatRepository.save(ChatImpl(0, "test", ArrayList(listOf(user.id))))
+        val chat = chatRepository.save(ChatImpl(0, "test", HashSet(listOf(user.id))))
 
         val msg1 = messageRepository.save(UserMessageImpl(0, "ee", user, 0, ChatImpl(chat)))
         val msg2 = messageRepository.save(UserMessageImpl(0, "ee", user, 0, ChatImpl(chat)))
@@ -56,7 +56,7 @@ internal class UserMessageControllerTest {
     @Test
     fun getById() {
 
-        val chat = chatRepository.save(ChatImpl(0, "test", ArrayList(listOf(user.id))))
+        val chat = chatRepository.save(ChatImpl(0, "test", HashSet(listOf(user.id))))
 
         val msg = messageRepository.save(UserMessageImpl(0, "ee", user, 0, ChatImpl(chat)))
 
@@ -66,7 +66,7 @@ internal class UserMessageControllerTest {
 
     @Test
     fun create() {
-        val chat = chatRepository.save(ChatImpl(0, "test", ArrayList(listOf(user.id))))
+        val chat = chatRepository.save(ChatImpl(0, "test", HashSet(listOf(user.id))))
         val msg = userMessageController.create(UserMessageImpl(0, "ee", user, 0, ChatImpl(chat)))
         val testMsg = messageRepository.getById(IdentifiableImpl(msg.id))
         Assert.assertTrue("Create not working", testMsg.id == msg.id)
@@ -74,7 +74,7 @@ internal class UserMessageControllerTest {
 
     @Test
     fun delete() {
-        val chat = chatRepository.save(ChatImpl(0, "test", ArrayList(listOf(user.id))))
+        val chat = chatRepository.save(ChatImpl(0, "test", HashSet(listOf(user.id))))
         val msg = messageRepository.save(UserMessageImpl(0, "ee", user, 0, ChatImpl(chat)))
         userMessageController.delete(msg.id)
 

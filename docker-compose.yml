@@ -23,9 +23,22 @@ services:
         networks:
             - my-network  
                    
+    messaging-service:
+        depends_on:
+            - eurika-server    
+        container_name: messaging-service
+        build:
+            context: ./messagingService
+            dockerfile: Dockerfile
+        ports:
+            - "8282:8282"
+        networks:
+            - my-network  
+                   
     client-service:
         depends_on:
             - eurika-server
+            - messaging-service
             - user-service
         container_name: client-service
         build:

@@ -10,113 +10,113 @@ import org.springframework.stereotype.Component
 
 @Component
 class SocialNetworkServiceClientImpl @Autowired constructor(
-        private val socialNetworkServiceClient: SocialNetworkServiceClient
+        private val socialNetworkServiceFeignClient: SocialNetworkServiceFeignClient
 ) : AuthClient, CommentClient, FriendshipClient, PostClient, UsersClient {
     override fun auth(token: Token): Boolean {
-        return socialNetworkServiceClient.auth(token)
+        return socialNetworkServiceFeignClient.auth(token)
     }
 
     override fun createComment(comment: Comment): CommentImpl {
-        return socialNetworkServiceClient.createComment(comment)
+        return socialNetworkServiceFeignClient.createComment(comment)
     }
 
     override fun getCommentById(id: Long): CommentImpl {
-        return socialNetworkServiceClient.getCommentById(id)
+        return socialNetworkServiceFeignClient.getCommentById(id)
     }
 
     override fun getComments(): List<CommentImpl> {
-        return socialNetworkServiceClient.getComments()
+        return socialNetworkServiceFeignClient.getComments()
     }
 
     override fun updateComment(comment: Comment) {
-        socialNetworkServiceClient.updateComment(comment)
+        socialNetworkServiceFeignClient.updateComment(comment)
     }
 
     override fun deleteComment(id: Long) {
-        socialNetworkServiceClient.deleteComment(id)
+        socialNetworkServiceFeignClient.deleteComment(id)
     }
 
     override fun getPostComments(id: Long): List<CommentImpl> {
-        return socialNetworkServiceClient.getPostComments(id)
+        return socialNetworkServiceFeignClient.getPostComments(id)
     }
 
     override fun makeFriendRequest(requester: Long, target: Long) {
-        socialNetworkServiceClient.makeFriendRequest(requester, target)
+        socialNetworkServiceFeignClient.makeFriendRequest(requester, target)
     }
 
     override fun approveFriendRequest(id: Long) {
-        socialNetworkServiceClient.approveFriendRequest(id)
+        socialNetworkServiceFeignClient.approveFriendRequest(id)
     }
 
     override fun denyFriendRequest(id: Long) {
-        socialNetworkServiceClient.denyFriendRequest(id)
+        socialNetworkServiceFeignClient.denyFriendRequest(id)
     }
 
     override fun getUserFriendRequests(userId: Long): List<FriendRequestImpl> {
-        return socialNetworkServiceClient.getUserFriendRequests(userId)
+        return socialNetworkServiceFeignClient.getUserFriendRequests(userId)
     }
 
     override fun getFriends(userId: Long): List<UserImpl> {
-        return socialNetworkServiceClient.getFriends(userId)
+        return socialNetworkServiceFeignClient.getFriends(userId)
     }
 
     override fun deleteFriendship(remover: Long, target: Long) {
-        socialNetworkServiceClient.deleteFriendship(remover, target)
+        socialNetworkServiceFeignClient.deleteFriendship(remover, target)
     }
 
     override fun createPost(user: Post): PostImpl {
-        return socialNetworkServiceClient.createPost(user)
+        return socialNetworkServiceFeignClient.createPost(user)
     }
 
     override fun getPostById(id: Long): PostImpl {
-        return socialNetworkServiceClient.getPostById(id)
+        return socialNetworkServiceFeignClient.getPostById(id)
     }
 
     override fun getPosts(): List<PostImpl> {
-        return socialNetworkServiceClient.getPosts()
+        return socialNetworkServiceFeignClient.getPosts()
     }
 
     override fun updatePost(post: Post) {
-        socialNetworkServiceClient.updatePost(post)
+        socialNetworkServiceFeignClient.updatePost(post)
     }
 
     override fun deletePost(id: Long) {
-        socialNetworkServiceClient.deletePost(id)
+        socialNetworkServiceFeignClient.deletePost(id)
     }
 
     override fun getUserPosts(id: Long): List<PostImpl> {
-        return socialNetworkServiceClient.getUserPosts(id)
+        return socialNetworkServiceFeignClient.getUserPosts(id)
     }
 
     override fun getUserFriendsPosts(id: Long): List<PostImpl> {
-        return socialNetworkServiceClient.getUserFriendsPosts(id)
+        return socialNetworkServiceFeignClient.getUserFriendsPosts(id)
     }
 
     override fun createUser(user: User): UserImpl {
-        return socialNetworkServiceClient.createUser(user)
+        return socialNetworkServiceFeignClient.createUser(user)
     }
 
     override fun getUserById(userId: Long): UserImpl {
-        return socialNetworkServiceClient.getUserById(userId)
+        return socialNetworkServiceFeignClient.getUserById(userId)
     }
 
     override fun getUsers(): List<UserImpl> {
-        return socialNetworkServiceClient.getUsers()
+        return socialNetworkServiceFeignClient.getUsers()
     }
 
     override fun updateUserInfo(userUpdateInfo: UserUpdateInfo) {
-        socialNetworkServiceClient.updateUserInfo(userUpdateInfo)
+        socialNetworkServiceFeignClient.updateUserInfo(userUpdateInfo)
     }
 
     override fun deleteUser(user: UserImpl) {
-        socialNetworkServiceClient.deleteUser(user)
+        socialNetworkServiceFeignClient.deleteUser(user)
     }
 
     override fun loginUser(userLogin: UserLogin): Token {
-        return socialNetworkServiceClient.loginUser(userLogin)
+        return socialNetworkServiceFeignClient.loginUser(userLogin)
     }
 
     override fun getUserIdByToken(token: Token): Long {
-        return socialNetworkServiceClient.getUserIdByToken(token)
+        return socialNetworkServiceFeignClient.getUserIdByToken(token)
     }
 }

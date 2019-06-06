@@ -1,7 +1,6 @@
 package com.github.dzeko14.socialNetwork.messagingService.repository
 
 import com.github.dzeko14.socialNetwork.entities.Chat
-import com.github.dzeko14.socialNetwork.entities.impl.IdentifiableImpl
 import com.github.dzeko14.socialNetwork.entities.interfaces.Identifiable
 import com.github.dzeko14.socialNetwork.interactors.repository.ChatRepository
 import com.github.dzeko14.socialNetwork.messagingService.model.ChatImpl
@@ -11,8 +10,8 @@ import org.springframework.stereotype.Repository
 class ChatRepositoryImpl(
         private val jpaRepository: ChatJpaRepository
 ) : ChatRepository {
-    override fun getChatsByUserId(userId: Long): List<Chat> {
-        return jpaRepository.getChatImplsByMembers(userId)
+    override fun getChatsByUsersId(members: Set<Long>): List<Chat> {
+        return jpaRepository.getChatImplsByMembersLike(HashSet(members))
     }
 
     override fun save(obj: Chat): Chat {

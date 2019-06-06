@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 
 @FeignClient("social-network-service")
-interface SocialNetworkServiceClient {
+interface SocialNetworkServiceFeignClient {
     @RequestMapping(method = [RequestMethod.POST],
             value = ["/auth"])
     fun auth(token: Token): Boolean

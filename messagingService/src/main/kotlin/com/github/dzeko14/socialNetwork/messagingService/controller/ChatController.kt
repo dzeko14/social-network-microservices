@@ -3,6 +3,7 @@ package com.github.dzeko14.socialNetwork.messagingService.controller
 import com.github.dzeko14.socialNetwork.entities.Chat
 import com.github.dzeko14.socialNetwork.entities.UserMessage
 import com.github.dzeko14.socialNetwork.entities.impl.IdentifiableImpl
+import com.github.dzeko14.socialNetwork.interactors.chat.CreateChatInteractor
 import com.github.dzeko14.socialNetwork.interactors.chat.GetChatsContainsUserInteractor
 import com.github.dzeko14.socialNetwork.interactors.crud.*
 import com.github.dzeko14.socialNetwork.interactors.userMessage.GetMessagesByChatInteractor
@@ -17,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException
 class ChatController @Autowired constructor(
         private val getChatsInteractor: GetAllIdentifiableInteractor<Chat>,
         private val getChatByIdInteractor: GetIdentifiableInteractor<Chat>,
-        private val createIdentifiableInteractor: CreateIdentifiableInteractor<Chat>,
+        private val createIdentifiableInteractor: CreateChatInteractor,
         private val updateIdentifiableInteractor: UpdateIdentifiableInteractor<Chat>,
         private val removeIdentifiableInteractor: RemoveIdentifiableInteractor<Chat>,
         private val getMessagesByChatInteractor: GetMessagesByChatInteractor,
@@ -64,7 +65,7 @@ class ChatController @Autowired constructor(
     @PostMapping
     fun create(@RequestBody chat: ChatImpl): Chat {
         return try {
-            createIdentifiableInteractor.create(chat)
+            createIdentifiableInteractor.createChat(chat)
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }

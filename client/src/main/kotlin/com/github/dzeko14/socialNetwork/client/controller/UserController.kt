@@ -33,7 +33,7 @@ class UserController @Autowired constructor(
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
-        rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User created", u))
+        //rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User created", u))
     }
 
     @GetMapping("/id/{id}")
@@ -41,7 +41,7 @@ class UserController @Autowired constructor(
         return try {
            // tokenValidator.validate(Token(token))
             val u = usersClient.getUserById(id)
-            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User get", u))
+            //rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User get", u))
             u
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())

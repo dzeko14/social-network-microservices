@@ -10,6 +10,6 @@ class GetChatsContainsUserInteractorImpl(
         private val chatRepository: ChatRepository
 ) : GetChatsContainsUserInteractor {
     override fun getChatThatContainsUser(userid: Long): List<Chat> {
-        return chatRepository.getChatsByUserId(userid)
+        return chatRepository.getChatsByUsersId(HashSet(listOf(userid)))
     }
 }

@@ -4,5 +4,5 @@ import com.github.dzeko14.socialNetwork.entities.Chat
 import com.github.dzeko14.socialNetwork.provider.StorageProvider
 
 interface ChatRepository : StorageProvider<Chat> {
-    fun getChatsByUserId(userId: Long): List<Chat>
+    fun getChatsByUsersId(members: Set<Long>): List<Chat>
 }
