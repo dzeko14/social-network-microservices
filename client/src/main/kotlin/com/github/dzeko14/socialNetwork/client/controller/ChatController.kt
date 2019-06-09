@@ -1,10 +1,10 @@
 package com.github.dzeko14.socialNetwork.client.controller
 
 import com.github.dzeko14.socialNetwork.client.feignClient.ChatClient
-import com.github.dzeko14.socialNetwork.client.model.ChatImpl
-import com.github.dzeko14.socialNetwork.entities.Chat
+import com.github.dzeko14.socialNetwork.client.feignClient.ChatMemberClient
+import com.github.dzeko14.socialNetwork.client.model.ChatMemberImpl
+import com.github.dzeko14.socialNetwork.entities.ChatMember
 import com.github.dzeko14.socialNetwork.entities.UserMessage
-import com.github.dzeko14.socialNetwork.entities.impl.IdentifiableImpl
 import feign.FeignException
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -13,11 +13,12 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/chats")
 class ChatController(
-        private val chatClient: ChatClient
+        private val chatClient: ChatClient,
+        private val chatMemberClient: ChatMemberClient
 ) {
 
     @GetMapping("/user/{id}")
-    fun getChatsContainsUser(@PathVariable id: Long): List<Chat> {
+    fun getChatsContainsUser(@PathVariable id: Long): List<String> {
         return try {
             //tokenValidator.validate(Token(token))
             chatClient.getChatsContainsUser(id)
@@ -26,42 +27,42 @@ class ChatController(
         }
     }
 
-    @GetMapping("/{id}/userMessages")
-    fun getChatMessages(@PathVariable id: Long): List<UserMessage> {
+    @GetMapping("/{chatId}/userMessages")
+    fun getChatMessages(@PathVariable("chatId") chatId: String): List<UserMessage> {
         return try {
             //tokenValidator.validate(Token(token))
-            chatClient.getChatMessages(id)
+            chatClient.getChatMessages(chatId)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
     }
 
-    @GetMapping
-    fun getAll(@RequestParam token: String): List<Chat> {
+    @GetMapping("/chatMember")
+    fun getAllUserMembers(@RequestParam token: String): List<ChatMember> {
         return try {
             //tokenValidator.validate(Token(token))
-            chatClient.getAllChats()
+            chatMemberClient.getAllChatMembers()
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
     }
 
 
-    @GetMapping("/{id}")
-    fun getById(@PathVariable id: Long): Chat {
+    @GetMapping("/chatMember/{id}")
+    fun getChatMemberById(@PathVariable id: Long): ChatMember {
         return try {
             //tokenValidator.validate(Token(token))
-            chatClient.getChatById(id)
+            chatMemberClient.getChatMemberById(id)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
     }
 
     @PostMapping
-    fun create(@RequestBody chat: ChatImpl): Chat {
-        return try {
+    fun createChat(@RequestBody chatMember: List<ChatMemberImpl>) {
+        try {
             //tokenValidator.validate(Token(token))
-            chatClient.createChat(chat)
+            chatClient.createChat(chatMember)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         } catch (e: Exception) {
@@ -69,21 +70,11 @@ class ChatController(
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/chatMember/{id}")
     fun delete(@PathVariable id: Long) {
         return try {
             //tokenValidator.validate(Token(token))
-            chatClient.deleteChat(id)
-        } catch (e: FeignException) {
-            throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
-        }
-    }
-
-    @PutMapping("/{id}")
-    fun update(@PathVariable id: Long, @RequestBody body: ChatImpl) {
-        try {
-            //tokenValidator.validate(Token(token))
-            chatClient.updateChat(id, body)
+            chatMemberClient.deleteChatMember(id)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }

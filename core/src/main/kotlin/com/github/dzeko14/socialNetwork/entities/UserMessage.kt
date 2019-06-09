@@ -7,5 +7,5 @@ abstract class UserMessage(
         open val content: String = "",
         open val author: User = User.emptyObject(),
         open val date: Long = 0,
-        open val chat: Chat = Chat.empty()
+        open val chatName: String = ""
 ) : Identifiable

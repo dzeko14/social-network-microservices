@@ -1,46 +1,37 @@
 package com.github.dzeko14.socialNetwork.client.feignClient
 
-import com.github.dzeko14.socialNetwork.client.model.ChatImpl
+import com.github.dzeko14.socialNetwork.client.model.ChatMemberImpl
 import com.github.dzeko14.socialNetwork.client.model.UserMessageImpl
-import com.github.dzeko14.socialNetwork.entities.Chat
 import com.github.dzeko14.socialNetwork.entities.UserMessage
-import com.github.dzeko14.socialNetwork.entities.impl.IdentifiableImpl
 import org.springframework.cloud.openfeign.FeignClient
-import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
 
 @FeignClient("messaging-service")
 interface MessagingServiceFeignClient {
 
     @RequestMapping(method = [RequestMethod.GET],
             value = ["/chats/user/{id}"])
-    fun getChatsContainsUser(@PathVariable id: Long): List<ChatImpl>
+    fun getChatsContainsUser(@PathVariable id: Long): List<String>
 
     @RequestMapping(method = [RequestMethod.GET],
-            value = ["/chats/{id}/userMessages"])
-    fun getChatMessages(@PathVariable id: Long): List<UserMessage>
+            value = ["/chats/{chatName}/userMessages"])
+    fun getChatMessages(@PathVariable chatName: String): List<UserMessageImpl>
 
     @RequestMapping(method = [RequestMethod.GET],
-            value = ["/chats"])
-    fun getAllChats(): List<ChatImpl>
-
+            value = ["/chats/chatMembers"])
+    fun getAllChatMembers(): List<ChatMemberImpl>
 
     @RequestMapping(method = [RequestMethod.GET],
-            value = ["/chats/{id}"])
-    fun getChatById(@PathVariable id: Long): ChatImpl
+            value = ["/chats/chatMembers/{id}"])
+    fun getChatMemberById(@PathVariable id: Long): ChatMemberImpl
 
     @RequestMapping(method = [RequestMethod.POST],
             value = ["/chats"])
-    fun createChat(@RequestBody chat: ChatImpl): ChatImpl
+    fun createChat(@RequestBody hatMembers: List<ChatMemberImpl>)
 
     @RequestMapping(method = [RequestMethod.DELETE],
-            value = ["/chats/{id}"])
-    fun deleteChat(@PathVariable id: Long)
-
-    @RequestMapping(method = [RequestMethod.PUT],
-            value = ["/chats/{id}"])
-    fun updateChat(@PathVariable id: Long, @RequestBody body: ChatImpl)
+            value = ["/chats/chatMembers/{id}"])
+    fun deleteChatMember(@PathVariable id: Long)
 
     @RequestMapping(method = [RequestMethod.GET],
             value = ["/userMessage"])

@@ -1,41 +1,41 @@
 package com.github.dzeko14.socialNetwork.client.feignClient
 
-import com.github.dzeko14.socialNetwork.client.model.ChatImpl
+import com.github.dzeko14.socialNetwork.client.model.ChatMemberImpl
 import com.github.dzeko14.socialNetwork.client.model.UserMessageImpl
-import com.github.dzeko14.socialNetwork.entities.Chat
+import com.github.dzeko14.socialNetwork.entities.ChatMember
 import com.github.dzeko14.socialNetwork.entities.UserMessage
 import org.springframework.stereotype.Component
 
 @Component
 class MessagingServiceClientImpl(
         private val feignClient: MessagingServiceFeignClient
-) : ChatClient, UserMessageClient {
-    override fun getChatsContainsUser(id: Long): List<Chat> {
+) : ChatClient, UserMessageClient, ChatMemberClient {
+    override fun getChatsContainsUser(id: Long): List<String> {
         return feignClient.getChatsContainsUser(id)
     }
 
-    override fun getChatMessages(id: Long): List<UserMessage> {
-        return feignClient.getChatMessages(id)
+    override fun getChatMessages(chatName: String): List<UserMessage> {
+        return feignClient.getChatMessages(chatName)
     }
 
-    override fun getAllChats(): List<Chat> {
-        return feignClient.getAllChats()
+    override fun createChat(chatMembers: List<ChatMemberImpl>) {
+        feignClient.createChat(chatMembers)
     }
 
-    override fun getChatById(id: Long): Chat {
-        return feignClient.getChatById(id)
+    override fun getAllChatMembers(): List<ChatMember> {
+        return feignClient.getAllChatMembers()
     }
 
-    override fun createChat(chat: ChatImpl): Chat {
-        return feignClient.createChat(chat)
+    override fun getChatMemberById(id: Long): ChatMember {
+        return feignClient.getChatMemberById(id)
     }
 
-    override fun deleteChat(id: Long) {
-        feignClient.deleteChat(id)
+    override fun deleteChatMember(id: Long) {
+        feignClient.deleteChatMember(id)
     }
 
-    override fun updateChat(id: Long, body: ChatImpl) {
-        feignClient.updateChat(id, body)
+    override fun updateChatMember(id: Long, body: ChatMemberImpl) {
+        TODO("Implement")
     }
 
     override fun getAllUserMessages(): List<UserMessage> {

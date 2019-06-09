@@ -1,13 +1,13 @@
 package com.github.dzeko14.socialNetwork.messagingService.controller
 
-import com.github.dzeko14.socialNetwork.entities.Chat
+import com.github.dzeko14.socialNetwork.entities.ChatMember
 import com.github.dzeko14.socialNetwork.entities.UserMessage
 import com.github.dzeko14.socialNetwork.entities.impl.IdentifiableImpl
 import com.github.dzeko14.socialNetwork.interactors.chat.CreateChatInteractor
 import com.github.dzeko14.socialNetwork.interactors.chat.GetChatsContainsUserInteractor
 import com.github.dzeko14.socialNetwork.interactors.crud.*
 import com.github.dzeko14.socialNetwork.interactors.userMessage.GetMessagesByChatInteractor
-import com.github.dzeko14.socialNetwork.messagingService.model.ChatImpl
+import com.github.dzeko14.socialNetwork.messagingService.model.ChatMemberImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -16,35 +16,35 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @RequestMapping("/chats")
 class ChatController @Autowired constructor(
-        private val getChatsInteractor: GetAllIdentifiableInteractor<Chat>,
-        private val getChatByIdInteractor: GetIdentifiableInteractor<Chat>,
+        private val getChatsInteractor: GetAllIdentifiableInteractor<ChatMember>,
+        private val getChatByIdInteractor: GetIdentifiableInteractor<ChatMember>,
         private val createIdentifiableInteractor: CreateChatInteractor,
-        private val updateIdentifiableInteractor: UpdateIdentifiableInteractor<Chat>,
-        private val removeIdentifiableInteractor: RemoveIdentifiableInteractor<Chat>,
+        private val updateIdentifiableInteractor: UpdateIdentifiableInteractor<ChatMember>,
+        private val removeIdentifiableInteractor: RemoveIdentifiableInteractor<ChatMember>,
         private val getMessagesByChatInteractor: GetMessagesByChatInteractor,
         private val getChatsContainsUserInteractor: GetChatsContainsUserInteractor
 ) {
 
     @GetMapping("/user/{id}")
-    fun getChatsContainsUser(@PathVariable id: Long): List<Chat> {
+    fun getChatsContainsUser(@PathVariable id: Long): List<String> {
         return try {
-            getChatsContainsUserInteractor.getChatThatContainsUser(id)
+            getChatsContainsUserInteractor.getChatsThatContainsUser(id)
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
-    @GetMapping("/{id}/userMessages")
-    fun getChatMessages(@PathVariable id: Long): List<UserMessage> {
+    @GetMapping("/{chatName}/userMessages")
+    fun getChatMessages(@PathVariable chatName: String): List<UserMessage> {
         return try {
-            getMessagesByChatInteractor.getMessagesByChatInteractor(id)
+            getMessagesByChatInteractor.getMessagesByChat(chatName)
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
-    @GetMapping
-    fun getAll(): List<Chat> {
+    @GetMapping("/chatMembers")
+    fun getAllChatMembers(): List<ChatMember> {
         return try {
             getChatsInteractor.getAll()
         } catch (e: Exception) {
@@ -52,9 +52,8 @@ class ChatController @Autowired constructor(
         }
     }
 
-
-    @GetMapping("/{id}")
-    fun getById(@PathVariable id: Long): Chat {
+    @GetMapping("/chatMembers/{id}")
+    fun getChatMemberById(@PathVariable id: Long): ChatMember {
         return try {
             getChatByIdInteractor.get(IdentifiableImpl(id))
         } catch (e: Exception) {
@@ -63,16 +62,17 @@ class ChatController @Autowired constructor(
     }
 
     @PostMapping
-    fun create(@RequestBody chat: ChatImpl): Chat {
+    fun createChat(@RequestBody chatMembers: List<ChatMemberImpl>) {
         return try {
-            createIdentifiableInteractor.createChat(chat)
+            val membersId = chatMembers.map { chatMember -> chatMember.user.id }
+            createIdentifiableInteractor.createChat(chatMembers.first().name, membersId)
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
     }
 
-    @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: Long) {
+    @DeleteMapping("/chatMembers/{id}")
+    fun deleteChatMember(@PathVariable id: Long) {
         try {
             removeIdentifiableInteractor.remove(IdentifiableImpl(id))
         } catch (e: Exception) {
@@ -81,9 +81,9 @@ class ChatController @Autowired constructor(
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: Long, @RequestBody body: ChatImpl) {
+    fun updateChat(@PathVariable id: Long, @RequestBody body: ChatMemberImpl) {
         try {
-            updateIdentifiableInteractor.update(body)
+           TODO("Implement")
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }

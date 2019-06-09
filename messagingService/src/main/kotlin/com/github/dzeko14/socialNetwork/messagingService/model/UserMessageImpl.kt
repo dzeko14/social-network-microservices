@@ -1,6 +1,6 @@
 package com.github.dzeko14.socialNetwork.messagingService.model
 
-import com.github.dzeko14.socialNetwork.entities.Chat
+import com.github.dzeko14.socialNetwork.entities.ChatMember
 import com.github.dzeko14.socialNetwork.entities.User
 import com.github.dzeko14.socialNetwork.entities.UserMessage
 import javax.persistence.*
@@ -13,13 +13,12 @@ data class UserMessageImpl(
         @ManyToOne(targetEntity = UserImpl::class)
         override val author: UserImpl = UserImpl(User.emptyObject()),
         override val date: Long = 0,
-        @ManyToOne(targetEntity = ChatImpl::class)
-        override val chat: ChatImpl = ChatImpl(Chat.empty())
-) : UserMessage(id, content, author, date, chat) {
+        override val chatName: String = ""
+) : UserMessage(id, content, author, date, chatName) {
         constructor(userMessage: UserMessage)
                 : this(userMessage.id,
                 userMessage.content,
                 UserImpl(userMessage.author),
                 userMessage.date,
-                ChatImpl(userMessage.chat))
+                userMessage.chatName)
 }

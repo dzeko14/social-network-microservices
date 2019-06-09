@@ -1,6 +1,5 @@
 package com.github.dzeko14.socialNetwork.messagingService.repository
 
-import com.github.dzeko14.socialNetwork.entities.Chat
 import com.github.dzeko14.socialNetwork.entities.UserMessage
 import com.github.dzeko14.socialNetwork.entities.interfaces.Identifiable
 import com.github.dzeko14.socialNetwork.interactors.repository.UserMessageRepository
@@ -12,8 +11,8 @@ class UserMessageRepositoryImpl(
         private val jpaRepository: UserMessageJpaRepository
 ) : UserMessageRepository {
 
-    override fun getMessagesByChat(chat: Chat): List<UserMessage> {
-        return jpaRepository.getByChat(chat)
+    override fun getMessagesByChat(chatName: String): List<UserMessage> {
+        return jpaRepository.getUserMessageImplsByChatName(chatName)
     }
 
     override fun save(obj: UserMessage): UserMessage {
