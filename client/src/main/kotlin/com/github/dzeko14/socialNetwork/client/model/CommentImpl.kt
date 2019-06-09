@@ -12,6 +12,6 @@ class CommentImpl(
         override val post: PostImpl = PostImpl(Post.emptyObject()),
         override val date: Long = Date().time,
         override val author: UserImpl = UserImpl(User.emptyObject())
-) : Comment(id, content, post, date) {
-    constructor(c: Comment): this(c.id, c.content, PostImpl(c.post), c.date)
+) : Comment(id, content, post, date, author) {
+    constructor(c: Comment): this(c.id, c.content, PostImpl(c.post), c.date, UserImpl(c.author))
 }

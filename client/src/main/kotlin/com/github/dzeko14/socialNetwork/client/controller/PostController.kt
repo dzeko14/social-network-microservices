@@ -30,7 +30,7 @@ class PostController @Autowired constructor(
         try {
            // tokenValidator.validate(Token(token))
             val p = postClient.createPost(post)
-            rabbitTemplate.convertAndSend(POST_QUEUE, RabbitMQMessage("Post created", p))
+            //rabbitTemplate.convertAndSend(POST_QUEUE, RabbitMQMessage("Post created", p))
             return p
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())

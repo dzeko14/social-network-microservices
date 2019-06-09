@@ -64,7 +64,7 @@ class UserController @Autowired constructor(
         try {
             //tokenValidator.validate(Token(token))
             usersClient.updateUserInfo(tokenRequest)
-            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User updated", tokenRequest.user))
+            //rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User updated", tokenRequest.user))
         }  catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
@@ -75,7 +75,7 @@ class UserController @Autowired constructor(
         try {
             tokenValidator.validate(Token(token))
             usersClient.deleteUser(tokenRequest)
-            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User deleted", tokenRequest))
+            //rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User deleted", tokenRequest))
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }

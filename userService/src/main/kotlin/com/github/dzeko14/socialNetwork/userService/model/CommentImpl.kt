@@ -17,6 +17,6 @@ class CommentImpl(
         override val date: Long = Date().time,
         @ManyToOne(targetEntity = UserImpl::class)
         override val author: UserImpl = UserImpl(User.emptyObject())
-) : Comment(id, content, post, date) {
-    constructor(c: Comment): this(c.id, c.content, PostImpl(c.post), c.date)
+) : Comment(id, content, post, date, author) {
+    constructor(c: Comment): this(c.id, c.content, PostImpl(c.post), c.date, UserImpl(c.author))
 }
