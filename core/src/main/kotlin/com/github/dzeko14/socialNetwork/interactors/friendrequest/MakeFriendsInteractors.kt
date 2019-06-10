@@ -56,6 +56,10 @@ class MakeFriendsInteractors(
             throw NoSuchUserException()
         }
 
+        if(friendRequestStorageProvider.getAll().any {friendRequest ->
+                    friendRequest.sender.id == requesterId.id && friendRequest.receiver.id == targetId.id
+        }) return
+
         val request = object : FriendRequest(
                 sender = requester,
                 receiver = target,
