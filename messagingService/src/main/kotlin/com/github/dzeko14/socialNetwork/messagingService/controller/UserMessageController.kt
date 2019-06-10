@@ -7,8 +7,10 @@ import com.github.dzeko14.socialNetwork.interactors.crud.GetAllIdentifiableInter
 import com.github.dzeko14.socialNetwork.interactors.crud.GetIdentifiableInteractor
 import com.github.dzeko14.socialNetwork.interactors.crud.RemoveIdentifiableInteractor
 import com.github.dzeko14.socialNetwork.interactors.userMessage.GetMessagesByChatInteractor
+import com.github.dzeko14.socialNetwork.messagingService.model.UserImpl
 import com.github.dzeko14.socialNetwork.messagingService.model.UserMessageImpl
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -22,10 +24,21 @@ class UserMessageController @Autowired constructor(
         private val createUserMessageInteractor: CreateIdentifiableInteractor<UserMessage>
 ) {
 
+    @Value("\${message-content:%s}")
+    private lateinit var contentFormatter: String
+
     @GetMapping
     fun getAll(): List<UserMessage> {
         return try {
-            getAllUserMessagesInteractor.getAll()
+            getAllUserMessagesInteractor.getAll().map { m ->
+                UserMessageImpl(
+                        m.id,
+                        String.format(contentFormatter, m.content),
+                        UserImpl(m.author),
+                        m.date,
+                        m.chatName
+                )
+            }
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
@@ -34,7 +47,14 @@ class UserMessageController @Autowired constructor(
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Long): UserMessage {
         return try {
-            getUserMessageByIdInteractor.get(IdentifiableImpl(id))
+            val m = getUserMessageByIdInteractor.get(IdentifiableImpl(id))
+            UserMessageImpl(
+                    m.id,
+                    String.format(contentFormatter, m.content),
+                    UserImpl(m.author),
+                    m.date,
+                    m.chatName
+            )
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }

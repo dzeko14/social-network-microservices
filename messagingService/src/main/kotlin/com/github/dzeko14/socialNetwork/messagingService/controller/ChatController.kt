@@ -8,7 +8,10 @@ import com.github.dzeko14.socialNetwork.interactors.chat.GetChatsContainsUserInt
 import com.github.dzeko14.socialNetwork.interactors.crud.*
 import com.github.dzeko14.socialNetwork.interactors.userMessage.GetMessagesByChatInteractor
 import com.github.dzeko14.socialNetwork.messagingService.model.ChatMemberImpl
+import com.github.dzeko14.socialNetwork.messagingService.model.UserImpl
+import com.github.dzeko14.socialNetwork.messagingService.model.UserMessageImpl
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -25,10 +28,18 @@ class ChatController @Autowired constructor(
         private val getChatsContainsUserInteractor: GetChatsContainsUserInteractor
 ) {
 
+    @Value("\${chat-name:%s}")
+    private lateinit var nameFormatter: String
+
+    @Value("\${message-content:%s}")
+    private lateinit var contentFormatter: String
+
     @GetMapping("/user/{id}")
     fun getChatsContainsUser(@PathVariable id: Long): List<String> {
         return try {
-            getChatsContainsUserInteractor.getChatsThatContainsUser(id)
+            getChatsContainsUserInteractor.getChatsThatContainsUser(id).map {
+                String.format(nameFormatter, it)
+            }
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
@@ -37,7 +48,15 @@ class ChatController @Autowired constructor(
     @GetMapping("/{chatName}/userMessages")
     fun getChatMessages(@PathVariable chatName: String): List<UserMessage> {
         return try {
-            getMessagesByChatInteractor.getMessagesByChat(chatName)
+            getMessagesByChatInteractor.getMessagesByChat(chatName).map { m ->
+                UserMessageImpl(
+                        m.id,
+                        String.format(contentFormatter, m.content),
+                        UserImpl(m.author),
+                        m.date,
+                        m.chatName
+                )
+            }
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }

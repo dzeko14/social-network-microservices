@@ -11,11 +11,14 @@ import com.github.dzeko14.socialNetwork.userService.model.UserImpl
 import com.github.dzeko14.socialNetwork.userService.model.UserLogin
 import com.github.dzeko14.socialNetwork.userService.model.UserUpdateInfo
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.cloud.context.config.annotation.RefreshScope
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 
+@RefreshScope
 @RestController
 @RequestMapping("/users")
 class UserController @Autowired constructor(
@@ -27,6 +30,16 @@ class UserController @Autowired constructor(
         val loginUserInteractor: LoginUserInteractor,
         val getUserIdByTokenInteractor: GetUserIdByTokenInteractor
 ) {
+
+    @Value("\${login:%s}")
+    private lateinit var loginFormatter: String
+
+    @Value("\${name:%s}")
+    private lateinit var nameFormatter: String
+
+    @Value("\${email:%s}")
+    private lateinit var emailFormatter: String
+
     @PostMapping("/id")
     fun getUserIdByToke(@RequestBody token: Token): Long {
         return getUserIdByTokenInteractor.getUserIdByToken(token)
@@ -44,12 +57,18 @@ class UserController @Autowired constructor(
     @GetMapping("/id/{id}")
     fun getUserById(@PathVariable("id") id: Long): User {
         return try {
-           getUserByIdInteractor.get(
+           val u = getUserByIdInteractor.get(
                     object: Identifiable {
                         override val id: Long = id
                     }
             )
-
+            UserImpl(
+                    u.id,
+                    String.format(loginFormatter, u.login),
+                    u.password,
+                    String.format(emailFormatter, u.email),
+                    String.format(nameFormatter, u.name)
+            )
            // ResponseEntity.ok(user)
         } catch (e: Exception) {
             //ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
@@ -60,7 +79,13 @@ class UserController @Autowired constructor(
     @GetMapping
     fun getAllUsers(): List<User> {
         return try {
-            getAllUsersInteractor.getAll()
+            getAllUsersInteractor.getAll().map { u ->  UserImpl(
+                    u.id,
+                    String.format(loginFormatter, u.login),
+                    u.password,
+                    String.format(emailFormatter, u.email),
+                    String.format(nameFormatter, u.name)
+            )}
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }

@@ -7,7 +7,9 @@ import com.github.dzeko14.socialNetwork.interactors.crud.*
 import com.github.dzeko14.socialNetwork.interactors.post.GetFriendsPostsInteractor
 import com.github.dzeko14.socialNetwork.interactors.post.GetMyPostsInteractor
 import com.github.dzeko14.socialNetwork.userService.model.PostImpl
+import com.github.dzeko14.socialNetwork.userService.model.UserImpl
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -25,6 +27,10 @@ class PostController @Autowired constructor(
     private val getMyPostsInteractor: GetMyPostsInteractor,
     private val getFriendsPostsInteractor: GetFriendsPostsInteractor
 ) {
+
+    @Value("\${post-content:%s}")
+    private lateinit var contentFormatter: String
+
     @PostMapping
     fun createPost(@RequestBody post: PostImpl): Post {
         try {
@@ -59,7 +65,13 @@ class PostController @Autowired constructor(
     @GetMapping("/{id}")
     fun getPostById(@PathVariable id: Long): Post {
         return try {
-            getIdentifiableInteractor.get(IdentifiableImpl(id))
+            val p = getIdentifiableInteractor.get(IdentifiableImpl(id))
+            PostImpl(
+                    p.id,
+                    String.format(contentFormatter, p.content),
+                    UserImpl(p.author),
+                    p.date
+            )
         } catch (e: NoSuchObjectInStorageException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: Exception) {
