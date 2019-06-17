@@ -1,5 +1,6 @@
 package com.github.dzeko14.socialNetwork.client.controller
 
+import com.github.dzeko14.socialNetwork.client.feignClient.AuthClient
 import com.github.dzeko14.socialNetwork.client.feignClient.UsersClient
 import com.github.dzeko14.socialNetwork.client.model.*
 import com.github.dzeko14.socialNetwork.client.validator.TokenValidator
@@ -18,7 +19,8 @@ import org.springframework.web.server.ResponseStatusException
 class UserController @Autowired constructor(
         val usersClient: UsersClient,
         val tokenValidator: TokenValidator,
-        private val rabbitTemplate: RabbitTemplate
+        private val rabbitTemplate: RabbitTemplate,
+        private val authClient: AuthClient
 ) {
 
     @PostMapping("/id")
@@ -33,7 +35,11 @@ class UserController @Autowired constructor(
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
-        //rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User created", u))
+        try {
+            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User created", u))
+        } catch (e: Exception) {
+            throw ResponseStatusException(HttpStatus.valueOf(500), e.message)
+        }
     }
 
     @GetMapping("/id/{id}")
@@ -41,7 +47,7 @@ class UserController @Autowired constructor(
         return try {
            // tokenValidator.validate(Token(token))
             val u = usersClient.getUserById(id)
-            //rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User get", u))
+            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User get", u))
             u
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -64,7 +70,7 @@ class UserController @Autowired constructor(
         try {
             //tokenValidator.validate(Token(token))
             usersClient.updateUserInfo(tokenRequest)
-            //rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User updated", tokenRequest.user))
+            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User updated", tokenRequest.user))
         }  catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
@@ -75,7 +81,7 @@ class UserController @Autowired constructor(
         try {
             tokenValidator.validate(Token(token))
             usersClient.deleteUser(tokenRequest)
-            //rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User deleted", tokenRequest))
+            rabbitTemplate.convertAndSend(USER_QUEUE, RabbitMQMessage("User deleted", tokenRequest))
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
@@ -85,6 +91,15 @@ class UserController @Autowired constructor(
     fun loginUser(@RequestBody userLogin: UserLogin): Token {
         return try {
             usersClient.loginUser(userLogin)
+        } catch (e: FeignException) {
+            throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
+        }
+    }
+
+    @PostMapping("/admin")
+    fun checkIfAdmin(@RequestBody token: Token): Boolean {
+        return try {
+            authClient.checkIfAdmin(token)
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }

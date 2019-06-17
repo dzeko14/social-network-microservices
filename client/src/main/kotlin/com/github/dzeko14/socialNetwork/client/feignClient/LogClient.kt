@@ -7,17 +7,25 @@ import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 
-@FeignClient("log-consumer")
+@FeignClient("message-consumer")
 interface LogClient {
     @RequestMapping(method = [RequestMethod.GET],
             value = ["/logs/user"])
-    fun getUserLogs(): List<UserLog>
+    fun getUserLogs(): List<String>
 
     @RequestMapping(method = [RequestMethod.GET],
             value = ["/logs/comments"])
-    fun getCommentLogs(): List<CommentLog>
+    fun getCommentLogs(): List<String>
 
     @RequestMapping(method = [RequestMethod.GET],
             value = ["/logs/posts"])
-    fun getPostLogs(): List<PostLog>
+    fun getPostLogs(): List<String>
+
+    @RequestMapping(method = [RequestMethod.GET],
+            value = ["/logs/chats"])
+    fun getChatLogs(): List<String>
+
+    @RequestMapping(method = [RequestMethod.GET],
+            value = ["/logs/messages"])
+    fun getMessageLogs(): List<String>
 }

@@ -10,10 +10,21 @@ services:
             - "8761:8761"               
         networks:
             - my-network  
-                   
+    
+    config-server:
+        container_name: config-server
+        build:
+            context: ./configService
+            dockerfile: Dockerfile
+        ports:
+            - "8888:8888"               
+        networks:
+            - my-network  
+    
     user-service:
         depends_on:
-            - eurika-server    
+            - eurika-server  
+            - config-server
         container_name: user-service
         build:
             context: ./userService
@@ -25,7 +36,8 @@ services:
                    
     messaging-service:
         depends_on:
-            - eurika-server    
+            - eurika-server  
+            - config-server
         container_name: messaging-service
         build:
             context: ./messagingService
@@ -40,6 +52,7 @@ services:
             - eurika-server
             - messaging-service
             - user-service
+            - message-consumer
         container_name: client-service
         build:
             context: ./client

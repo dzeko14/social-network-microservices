@@ -30,7 +30,7 @@ class CommentController @Autowired constructor(
         return try {
             //tokenValidator.validate(Token(token))
             val c = commentClient.createComment(comment)
-            //rabbitTemplate.convertAndSend(COMMENT_QUEUE, RabbitMQMessage("Comment created", c))
+            rabbitTemplate.convertAndSend(COMMENT_QUEUE, RabbitMQMessage("Comment created", c))
             c
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
@@ -44,7 +44,7 @@ class CommentController @Autowired constructor(
            // tokenValidator.validate(Token(token))
             val c = commentClient.getCommentById(id)
             commentClient.deleteComment(id)
-            //rabbitTemplate.convertAndSend(COMMENT_QUEUE, RabbitMQMessage("Comment deleted", c))
+            rabbitTemplate.convertAndSend(COMMENT_QUEUE, RabbitMQMessage("Comment deleted", c))
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }
@@ -76,7 +76,7 @@ class CommentController @Autowired constructor(
         try {
            // tokenValidator.validate(Token(token))
             commentClient.updateComment(comment)
-           // rabbitTemplate.convertAndSend(COMMENT_QUEUE, RabbitMQMessage("Comment updated", comment))
+            rabbitTemplate.convertAndSend(COMMENT_QUEUE, RabbitMQMessage("Comment updated", comment))
         } catch (e: FeignException) {
             throw ResponseStatusException(HttpStatus.valueOf(e.status()), e.contentUTF8())
         }

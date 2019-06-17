@@ -21,12 +21,12 @@ class TokenValidatorImpl @Autowired constructor(
         return try {
             val user = userRepository.findByLogin(tokenData[0])
             val encodedPassword = encodePassword(user.password)
-            if (encodedPassword == tokenData[1].toInt()) {
+            if (encodedPassword == tokenData[2].toInt()) {
                 if (TOKEN_EXPIRE_DAY == -1) { true }
                 else {
                     LocalDateTime
                             .now()
-                            .toEpochSecond(ZoneOffset.UTC) < tokenData[2].toLong()
+                            .toEpochSecond(ZoneOffset.UTC) < tokenData[3].toLong()
                 }
             } else { false }
         } catch (e: Exception) { return false }

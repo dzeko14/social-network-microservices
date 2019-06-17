@@ -12,6 +12,11 @@ import org.springframework.stereotype.Component
 class SocialNetworkServiceClientImpl @Autowired constructor(
         private val socialNetworkServiceFeignClient: SocialNetworkServiceFeignClient
 ) : AuthClient, CommentClient, FriendshipClient, PostClient, UsersClient {
+
+    override fun checkIfAdmin(token: Token): Boolean {
+        return socialNetworkServiceFeignClient.checkIfAdminByToken(token)
+    }
+
     override fun auth(token: Token): Boolean {
         return socialNetworkServiceFeignClient.auth(token)
     }

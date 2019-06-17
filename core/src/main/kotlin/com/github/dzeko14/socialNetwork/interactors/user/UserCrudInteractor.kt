@@ -17,7 +17,7 @@ class UserCrudInteractor(
             object : User(
                     id = it.id,
                     login = it.login,
-                    email = it.password,
+                    email = it.email,
                     name = it.name ) { }
         }
     }

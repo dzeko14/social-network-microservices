@@ -8,8 +8,11 @@ import com.github.dzeko14.socialNetwork.interactors.chat.GetChatsContainsUserInt
 import com.github.dzeko14.socialNetwork.interactors.crud.*
 import com.github.dzeko14.socialNetwork.interactors.userMessage.GetMessagesByChatInteractor
 import com.github.dzeko14.socialNetwork.messagingService.model.ChatMemberImpl
+import com.github.dzeko14.socialNetwork.messagingService.model.RabbitMQMessage
 import com.github.dzeko14.socialNetwork.messagingService.model.UserImpl
 import com.github.dzeko14.socialNetwork.messagingService.model.UserMessageImpl
+import com.github.dzeko14.socialNetwork.rabbitmq.CHAT_QUEUE
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -25,7 +28,8 @@ class ChatController @Autowired constructor(
         private val updateIdentifiableInteractor: UpdateIdentifiableInteractor<ChatMember>,
         private val removeIdentifiableInteractor: RemoveIdentifiableInteractor<ChatMember>,
         private val getMessagesByChatInteractor: GetMessagesByChatInteractor,
-        private val getChatsContainsUserInteractor: GetChatsContainsUserInteractor
+        private val getChatsContainsUserInteractor: GetChatsContainsUserInteractor,
+        private val rabbitTemplate: RabbitTemplate
 ) {
 
     @Value("\${chat-name:%s}")
@@ -48,7 +52,7 @@ class ChatController @Autowired constructor(
     @GetMapping("/{chatName}/userMessages")
     fun getChatMessages(@PathVariable chatName: String): List<UserMessage> {
         return try {
-            getMessagesByChatInteractor.getMessagesByChat(chatName).map { m ->
+            val c = getMessagesByChatInteractor.getMessagesByChat(chatName).map { m ->
                 UserMessageImpl(
                         m.id,
                         String.format(contentFormatter, m.content),
@@ -57,6 +61,8 @@ class ChatController @Autowired constructor(
                         m.chatName
                 )
             }
+            rabbitTemplate.convertAndSend(CHAT_QUEUE, RabbitMQMessage("Get chat messages", chatName))
+            c
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
@@ -85,6 +91,7 @@ class ChatController @Autowired constructor(
         return try {
             val membersId = chatMembers.map { chatMember -> chatMember.user.id }
             createIdentifiableInteractor.createChat(chatMembers.first().name, membersId)
+            rabbitTemplate.convertAndSend(CHAT_QUEUE, RabbitMQMessage("Chat created", chatMembers.first().name))
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }

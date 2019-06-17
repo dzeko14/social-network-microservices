@@ -7,4 +7,5 @@ import org.springframework.web.bind.annotation.RequestMethod
 
 interface AuthClient {
     fun auth(token: Token): Boolean
+    fun checkIfAdmin(token: Token): Boolean
 }

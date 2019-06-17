@@ -7,8 +7,12 @@ import com.github.dzeko14.socialNetwork.interactors.crud.GetAllIdentifiableInter
 import com.github.dzeko14.socialNetwork.interactors.crud.GetIdentifiableInteractor
 import com.github.dzeko14.socialNetwork.interactors.crud.RemoveIdentifiableInteractor
 import com.github.dzeko14.socialNetwork.interactors.userMessage.GetMessagesByChatInteractor
+import com.github.dzeko14.socialNetwork.messagingService.model.RabbitMQMessage
 import com.github.dzeko14.socialNetwork.messagingService.model.UserImpl
 import com.github.dzeko14.socialNetwork.messagingService.model.UserMessageImpl
+import com.github.dzeko14.socialNetwork.rabbitmq.CHAT_QUEUE
+import com.github.dzeko14.socialNetwork.rabbitmq.MESSAGE_QUEUE
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -21,7 +25,8 @@ class UserMessageController @Autowired constructor(
         private val getAllUserMessagesInteractor: GetAllIdentifiableInteractor<UserMessage>,
         private val getUserMessageByIdInteractor: GetIdentifiableInteractor<UserMessage>,
         private val removeUserMessageInteractor: RemoveIdentifiableInteractor<UserMessage>,
-        private val createUserMessageInteractor: CreateIdentifiableInteractor<UserMessage>
+        private val createUserMessageInteractor: CreateIdentifiableInteractor<UserMessage>,
+        private val rabbitTemplate: RabbitTemplate
 ) {
 
     @Value("\${message-content:%s}")
@@ -48,6 +53,7 @@ class UserMessageController @Autowired constructor(
     fun getById(@PathVariable id: Long): UserMessage {
         return try {
             val m = getUserMessageByIdInteractor.get(IdentifiableImpl(id))
+            rabbitTemplate.convertAndSend(MESSAGE_QUEUE, RabbitMQMessage("Get message", m))
             UserMessageImpl(
                     m.id,
                     String.format(contentFormatter, m.content),
@@ -63,7 +69,9 @@ class UserMessageController @Autowired constructor(
     @PostMapping
     fun create(@RequestBody userMessage: UserMessageImpl): UserMessage {
         return try {
-            createUserMessageInteractor.create(userMessage)
+            val m = createUserMessageInteractor.create(userMessage)
+            rabbitTemplate.convertAndSend(MESSAGE_QUEUE, RabbitMQMessage("Created message", m))
+            m
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
@@ -72,7 +80,10 @@ class UserMessageController @Autowired constructor(
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long) {
         try {
+            rabbitTemplate.convertAndSend(MESSAGE_QUEUE, RabbitMQMessage("Get message",
+                    getUserMessageByIdInteractor.get(IdentifiableImpl(id))))
             removeUserMessageInteractor.remove(IdentifiableImpl(id))
+
         } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }

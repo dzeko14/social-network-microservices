@@ -5,6 +5,7 @@ import com.github.dzeko14.socialNetwork.entities.Comment
 import com.github.dzeko14.socialNetwork.entities.Post
 import com.github.dzeko14.socialNetwork.entities.Token
 import com.github.dzeko14.socialNetwork.entities.User
+import com.sun.org.apache.xpath.internal.operations.Bool
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -101,4 +102,7 @@ interface SocialNetworkServiceFeignClient {
 
     @RequestMapping(method = [RequestMethod.POST], value = ["/users/id"])
     fun getUserIdByToken(token: Token): Long
+
+    @RequestMapping(method = [RequestMethod.POST], value = ["/auth/admin"])
+    fun checkIfAdminByToken(token: Token): Boolean
 }

@@ -28,6 +28,16 @@ class RabbitMQConfig {
     }
 
     @Bean
+    fun chatQueue(): Queue {
+        return Queue(CHAT_QUEUE, false)
+    }
+
+    @Bean
+    fun messageQueue(): Queue {
+        return Queue(MESSAGE_QUEUE, false)
+    }
+
+    @Bean
     fun producerMessageConverter(): Jackson2JsonMessageConverter {
         return Jackson2JsonMessageConverter()
     }

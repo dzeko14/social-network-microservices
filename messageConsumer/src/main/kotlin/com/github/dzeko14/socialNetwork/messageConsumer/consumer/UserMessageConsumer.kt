@@ -1,26 +1,27 @@
 package com.github.dzeko14.socialNetwork.messageConsumer.consumer
 
-import com.github.dzeko14.socialNetwork.messageConsumer.model.RabbitMQMessage
-import com.github.dzeko14.socialNetwork.messageConsumer.model.UserImpl
-import com.github.dzeko14.socialNetwork.messageConsumer.model.UserLog
-import com.github.dzeko14.socialNetwork.messageConsumer.repository.UserLogRepository
+import com.github.dzeko14.socialNetwork.interactors.repository.UserMessageRepository
+import com.github.dzeko14.socialNetwork.messageConsumer.model.*
+import com.github.dzeko14.socialNetwork.messageConsumer.repository.UserMessageLogRepository
+import com.github.dzeko14.socialNetwork.rabbitmq.MESSAGE_QUEUE
 import com.github.dzeko14.socialNetwork.rabbitmq.USER_QUEUE
 import org.springframework.amqp.rabbit.annotation.EnableRabbit
 import org.springframework.amqp.rabbit.annotation.RabbitListener
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @EnableRabbit
 @Component
-class UserMessageConsumer @Autowired constructor(
-        private val userLogRepository: UserLogRepository
+class UserMessageConsumer (
+        private val repo: UserMessageLogRepository
 ) {
-
-    @RabbitListener(queues = [USER_QUEUE])
-    fun listenUserQueue(message: RabbitMQMessage<UserImpl>) {
-        userLogRepository.save(UserLog(
+    @RabbitListener(queues = [MESSAGE_QUEUE])
+    fun listenUserQueue(message: RabbitMQMessage<UserMessageImpl>) {
+        val autheoId = message.body?.author?.id ?: 0
+        repo.save(MessageLog(
                 message.title,
-                message.body,
+                message.body?.id ?: 0,
+                message.body?.content ?: "",
+                autheoId,
                 message.date
         ))
     }
